@@ -19,37 +19,36 @@ from utils.misc import modules_help, prefix
 from utils.scripts import get_args_raw, import_library
 
 _ = import_library("openai")
-_ = import_library("mistune")
+__ = import_library("mistune")
 
 
-messages: list[dict[str, str]] = db.get("core.gpt", "messages", [])
+messages: list[openai.types.chat.ChatCompletionMessageParam] = db.get(
+    "core.gpt", "messages", []
+)
 if not db.get("core.gpt", "version"):
     db.set("core.gpt", "version", "gpt-3.5-turbo-16k")
 
 
 async def create_completion(
-    message: Message, client: Client, msg_list: list[dict[str, str]]
+    message: Message,
+    client: Client,
+    oai: openai.AsyncClient,
 ):
     try:
-        return await openai.ChatCompletion.acreate(
+        return await oai.chat.completions.create(
             model=db.get("core.gpt", "version"),
-            messages=msg_list,
+            messages=messages,
         )
-    except openai.error.RateLimitError:
-        await client.send_message("me", " ".join(message.text.split()[1:]))
-        return await message.edit("<b>Rate limit exceeded.</b>")
-    except openai.error.AuthenticationError:
-        await client.send_message("me", " ".join(message.text.split()[1:]))
-        return await message.edit("<b>Invalid API key.</b>")
     except Exception as e:
         await client.send_message("me", " ".join(message.text.split()[1:]))
         return await message.edit(str(e))
 
 
-def define_api_key():
+def get_client() -> openai.AsyncClient:
     if db.get("core.gpt", "api_key") is None:
         raise ValueError("<b>API key not set.</b>")
-    openai.api_key = db.get("core.gpt", "api_key")
+    oai = openai.AsyncClient(api_key=db.get("core.gpt", "api_key"))
+    return oai
 
 
 def get_prompt(message: Message):
@@ -65,7 +64,7 @@ def get_prompt(message: Message):
 @Client.on_message(filters.command("gpt", prefix) & filters.me)
 async def gpt(client: Client, message: Message):
     try:
-        define_api_key()
+        oai = get_client()
     except ValueError as e:
         return await message.edit(str(e))
 
@@ -76,7 +75,7 @@ async def gpt(client: Client, message: Message):
     messages.append({"role": "user", "content": question})
 
     await message.edit("<b>Thinking...</b>")
-    response = await create_completion(message, client, messages)
+    response = await create_completion(message=message, client=client, oai=oai)
 
     if not isinstance(response, Message):
         messages.append({
@@ -92,7 +91,7 @@ async def gpt(client: Client, message: Message):
 @Client.on_message(filters.command("g", prefix) & filters.me)
 async def gpt_no_context(client: Client, message: Message):
     try:
-        define_api_key()
+        oai = get_client()
     except ValueError as e:
         return await message.edit(str(e))
 
@@ -100,11 +99,9 @@ async def gpt_no_context(client: Client, message: Message):
         question = get_prompt(message)
     except ValueError as e:
         return await message.edit(str(e))
-    await message.edit("<b>Thinking...</b>")
 
-    response = await create_completion(
-        message, client, [{"role": "user", "content": question}]
-    )
+    await message.edit("<b>Thinking...</b>")
+    response = await create_completion(message=message, client=client, oai=oai)
 
     if not isinstance(response, Message):
         await message.edit(
