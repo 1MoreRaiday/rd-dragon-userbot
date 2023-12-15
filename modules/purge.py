@@ -15,17 +15,26 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
-from pyrogram import Client, filters
+from contextlib import suppress
+from pyrogram import Client, filters, errors
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
 from utils.scripts import with_reply
 
 
-@Client.on_message(filters.command("del", prefix) & filters.me)
-async def del_msg(_, message: Message):
+@Client.on_message(filters.command(["d", "del"], prefix) & filters.me)
+async def del_msg(client: Client, message: Message):
+    if not message.reply_to_message:
+        with suppress(errors.MessageDeleteForbidden):
+            msg = await client.get_messages(message.chat.id, message.id - 1)
+            while msg.empty:
+                msg = await client.get_messages(message.chat.id, msg.id - 1)
+            await msg.delete()
+    else:
+        await message.reply_to_message.delete()
     await message.delete()
-    await message.reply_to_message.delete()
+
 
 
 @Client.on_message(filters.command("purge", prefix) & filters.me)
