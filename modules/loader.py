@@ -20,15 +20,15 @@ import requests
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
+from utils.config import modules_repo_branch
+from utils.misc import modules_help, prefix
 from utils.scripts import (
-    restart,
     format_exc,
     format_module_help,
     load_module,
+    restart,
     unload_module,
 )
-from utils.misc import modules_help, prefix
-from utils.config import modules_repo_branch
 
 BASE_PATH = os.path.abspath(os.getcwd())
 
@@ -87,7 +87,8 @@ async def unload_mods(client: Client, message: Message):
         )
     elif os.path.exists(f"{BASE_PATH}/modules/{module_name}.py"):
         await message.edit(
-            "<b>It is forbidden to remove built-in modules, it will disrupt the updater</b>"
+            "<b>It is forbidden to remove built-in modules, it will disrupt the"
+            " updater</b>"
         )
     else:
         await message.edit(
@@ -120,8 +121,8 @@ async def load_all_mods(client: Client, message: Message):
         return await message.edit("<b>All modules already loaded</b>")
 
     await message.edit(
-        f"<b>Loading new modules (it may take a lot of time): "
-        f'{" ".join(new_modules.keys())}</b>'
+        "<b>Loading new modules (it may take a lot of time): "
+        f"{' '.join(new_modules.keys())}</b>"
     )
 
     for module_name, url in new_modules.items():
@@ -131,7 +132,8 @@ async def load_all_mods(client: Client, message: Message):
         await load_module(module_name, client)
 
     await message.edit(
-        f'<b>Successfully loaded new modules: {" ".join(new_modules.keys())}</b>'
+        "<b>Successfully loaded new modules:"
+        f" {' '.join(new_modules.keys())}</b>"
     )
 
 

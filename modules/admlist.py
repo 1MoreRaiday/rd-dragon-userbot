@@ -17,11 +17,10 @@
 import json
 from html import escape as t
 from time import perf_counter
-from typing import AsyncGenerator, Optional, List, Union
+from typing import AsyncGenerator, List, Optional, Union
 
-from pyrogram import Client, filters
+from pyrogram import Client, enums, filters, raw, types, utils
 from pyrogram.errors.exceptions.flood_420 import FloodWait
-from pyrogram import types, raw, utils, enums
 from pyrogram.types.object import Object
 
 from utils.misc import modules_help, prefix
@@ -115,9 +114,9 @@ class Chat(Object):
             photo=types.ChatPhoto._parse(
                 client, user.photo, peer_id, user.access_hash
             ),
-            restrictions=types.List(
-                [types.Restriction._parse(r) for r in user.restriction_reason]
-            )
+            restrictions=types.List([
+                types.Restriction._parse(r) for r in user.restriction_reason
+            ])
             or None,
             dc_id=getattr(getattr(user, "photo", None), "dc_id", None),
             client=client,
@@ -152,9 +151,11 @@ class Chat(Object):
 
         return Chat(
             id=peer_id,
-            type=enums.ChatType.SUPERGROUP
-            if getattr(channel, "megagroup", None)
-            else enums.ChatType.CHANNEL,
+            type=(
+                enums.ChatType.SUPERGROUP
+                if getattr(channel, "megagroup", None)
+                else enums.ChatType.CHANNEL
+            ),
             is_verified=getattr(channel, "verified", None),
             is_restricted=getattr(channel, "restricted", None),
             is_creator=getattr(channel, "creator", None),
@@ -168,9 +169,9 @@ class Chat(Object):
                 peer_id,
                 getattr(channel, "access_hash", 0),
             ),
-            restrictions=types.List(
-                [types.Restriction._parse(r) for r in restriction_reason]
-            )
+            restrictions=types.List([
+                types.Restriction._parse(r) for r in restriction_reason
+            ])
             or None,
             permissions=types.ChatPermissions._parse(
                 getattr(channel, "default_banned_rights", None)
@@ -323,12 +324,18 @@ async def admlist(client: Client, message: types.Message):
         text = "<b>Adminned chats:</b>\n"
         for index, chat in enumerate(adminned_chats):
             cid = str(chat.id).replace("-100", "")
-            text += f"{index + 1}. <a href=https://t.me/c/{cid}/1>{chat.title}</a>\n"
+            text += (
+                f"{index + 1}. <a"
+                f" href=https://t.me/c/{cid}/1>{chat.title}</a>\n"
+            )
 
         text += "\n<b>Owned chats:</b>\n"
         for index, chat in enumerate(owned_chats):
             cid = str(chat.id).replace("-100", "")
-            text += f"{index + 1}. <a href=https://t.me/c/{cid}/1>{chat.title}</a>\n"
+            text += (
+                f"{index + 1}. <a"
+                f" href=https://t.me/c/{cid}/1>{chat.title}</a>\n"
+            )
 
         text += "\n<b>Owned chats with username:</b>\n"
         for index, chat in enumerate(owned_usernamed_chats):
@@ -342,12 +349,12 @@ async def admlist(client: Client, message: types.Message):
             len(adminned_chats) + len(owned_chats) + len(owned_usernamed_chats)
         )
         await message.edit(
-            text + "\n"
-            f"<b><u>Total:</u></b> {total_count}"
-            f"\n<b><u>Adminned chats:</u></b> {len(adminned_chats)}\n"
-            f"<b><u>Owned chats:</u></b> {len(owned_chats)}\n"
-            f"<b><u>Owned chats with username:</u></b> {len(owned_usernamed_chats)}\n\n"
-            f"Done at {round(stop - start, 3)} seconds."
+            text
+            + f"\n<b><u>Total:</u></b> {total_count}\n<b><u>Adminned"
+            f" chats:</u></b> {len(adminned_chats)}\n<b><u>Owned"
+            f" chats:</u></b> {len(owned_chats)}\n<b><u>Owned chats with"
+            f" username:</u></b> {len(owned_usernamed_chats)}\n\nDone at"
+            f" {round(stop - start, 3)} seconds."
         )
     except Exception as e:
         await message.edit(format_exc(e))
@@ -381,12 +388,13 @@ async def admcount(client: Client, message: types.Message):
         stop = perf_counter()
         total_count = adminned_chats + owned_chats + owned_usernamed_chats
         await message.edit(
-            f"<b><u>Total:</u></b> {adminned_chats + owned_chats + owned_usernamed_chats}"
-            f"\n<b><u>Adminned chats:</u></b> {adminned_chats}\n"
-            f"<b><u>Owned chats:</u></b> {owned_chats}\n"
-            f"<b><u>Owned chats with username:</u></b> {owned_usernamed_chats}\n\n"
-            f"Done at {round(stop - start, 3)} seconds.\n\n"
-            f"<b>Get full list: </b><code>{prefix}admlist</code>"
+            "<b><u>Total:</u></b>"
+            f" {adminned_chats + owned_chats + owned_usernamed_chats}\n<b><u>Adminned"
+            f" chats:</u></b> {adminned_chats}\n<b><u>Owned chats:</u></b>"
+            f" {owned_chats}\n<b><u>Owned chats with username:</u></b>"
+            f" {owned_usernamed_chats}\n\nDone at"
+            f" {round(stop - start, 3)} seconds.\n\n<b>Get full list:"
+            f" </b><code>{prefix}admlist</code>"
         )
     except Exception as e:
         await message.edit(format_exc(e))

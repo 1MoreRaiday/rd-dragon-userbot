@@ -14,13 +14,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import asyncio
+import importlib
 import os
 import re
-import sys
-import asyncio
-import traceback
-import importlib
 import subprocess
+import sys
+import traceback
 from io import BytesIO
 from types import ModuleType
 from typing import Dict, Union
@@ -50,11 +50,11 @@ def format_exc(e: Exception, suffix="") -> str:
     traceback.print_exc()
     if isinstance(e, errors.RPCError):
         return (
-            f"<b>Telegram API error!</b>\n"
-            f"<code>[{e.CODE} {e.ID or e.NAME}] — {e.MESSAGE.format(value=e.value)}</code>\n\n<b>{suffix}</b>"
+            f"<b>Telegram API error!</b>\n<code>[{e.CODE} {e.ID or e.NAME}] —"
+            f" {e.MESSAGE.format(value=e.value)}</code>\n\n<b>{suffix}</b>"
         )
     return (
-        f"<b>Error!</b>\n"
+        "<b>Error!</b>\n"
         f"<code>{e.__class__.__name__}: {e}</code>\n\n<b>{suffix}</b>"
     )
 
@@ -160,12 +160,13 @@ def import_library(library_name: str, package_name: str = None):
     try:
         return importlib.import_module(library_name)
     except ImportError:
-        completed = subprocess.run(
-            [sys.executable, "-m", "pip", "install", package_name]
-        )
+        completed = subprocess.run([
+            sys.executable, "-m", "pip", "install", package_name
+        ])
         if completed.returncode != 0:
             raise AssertionError(
-                f"Failed to install library {package_name} (pip exited with code {completed.returncode})"
+                f"Failed to install library {package_name} (pip exited with"
+                f" code {completed.returncode})"
             )
         return importlib.import_module(library_name)
 
@@ -240,15 +241,16 @@ async def load_module(
         except asyncio.TimeoutError:
             if message:
                 await message.edit(
-                    "<b>Timeout while installed requirements. Try to install them manually</b>"
+                    "<b>Timeout while installed requirements. Try to install"
+                    " them manually</b>"
                 )
             raise TimeoutError("timeout while installing requirements") from e
 
         if proc.returncode != 0:
             if message:
                 await message.edit(
-                    f"<b>Failed to install requirements (pip exited with code {proc.returncode}). "
-                    f"Check logs for futher info</b>"
+                    "<b>Failed to install requirements (pip exited with code"
+                    f" {proc.returncode}). Check logs for futher info</b>"
                 )
             raise RuntimeError("failed to install requirements") from e
 

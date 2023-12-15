@@ -18,11 +18,11 @@ from pyrogram import Client, filters, types
 
 from utils.misc import modules_help, prefix
 from utils.scripts import (
-    with_reply,
+    format_exc,
     interact_with,
     interact_with_to_delete,
-    format_exc,
     resize_image,
+    with_reply,
 )
 
 
@@ -54,7 +54,8 @@ async def kang(client: Client, message: types.Message):
         return
     if "StickerExample.psd" not in result.text:
         await message.edit(
-            "<b>Stickerpack doesn't exitst. Create it using @Stickers bot (via /newpack command)</b>"
+            "<b>Stickerpack doesn't exitst. Create it using @Stickers bot (via"
+            " /newpack command)</b>"
         )
         return
 
@@ -77,7 +78,8 @@ async def kang(client: Client, message: types.Message):
         await interact_with(await client.send_message("@stickers", "/done"))
         await client.delete_messages("@stickers", interact_with_to_delete)
         await message.edit(
-            f"<b>Sticker added to <a href=https://t.me/addstickers/{pack}>pack</a></b>"
+            "<b>Sticker added to <a"
+            f" href=https://t.me/addstickers/{pack}>pack</a></b>"
         )
     else:
         await message.edit(
@@ -129,5 +131,7 @@ async def resize_cmd(client: Client, message: types.Message):
 modules_help["stickers"] = {
     "kang [reply]* [pack]* [emoji]": "Add sticker to defined pack",
     "stp [reply]*": "Convert replied sticker to PNG",
-    "resize [reply]* [size] [size2]": "Resize replied image to 512xN (or SIZExSIZE2) format",
+    "resize [reply]* [size] [size2]": (
+        "Resize replied image to 512xN (or SIZExSIZE2) format"
+    ),
 }

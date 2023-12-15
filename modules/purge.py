@@ -16,7 +16,8 @@
 
 import asyncio
 from contextlib import suppress
-from pyrogram import Client, filters, errors
+
+from pyrogram import Client, errors, filters
 from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
@@ -57,6 +58,8 @@ async def purge(client: Client, message: Message):
 
 
 modules_help["purge"] = {
-    "purge [reply]": "Purge (delete all messages) chat from replied message to last",
+    "purge [reply]": (
+        "Purge (delete all messages) chat from replied message to last"
+    ),
     "del [reply]": "Delete replied message",
 }

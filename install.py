@@ -16,6 +16,7 @@
 
 import datetime
 import sys
+
 from pyrogram import Client, errors
 
 from utils import config
@@ -58,7 +59,7 @@ if __name__ == "__main__":
             "Channel: @Dragon_Userb0t\n"
             "Custom modules: @Dragon_Userb0t_modules\n"
             "Chat [RU]: @Dragon_Userb0t_chat\n"
-            f"For restart, enter:</b>\n"
+            "For restart, enter:</b>\n"
             f"<code>{restart}</code>",
         )
     except errors.RPCError:

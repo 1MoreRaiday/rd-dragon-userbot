@@ -18,9 +18,8 @@ import datetime
 
 from pyrogram import Client, filters, types
 
-from utils.misc import modules_help, prefix
 from utils.db import db
-
+from utils.misc import modules_help, prefix
 
 # avoid using global variables
 afk_info = db.get(
@@ -65,7 +64,7 @@ async def afk(_, message):
     afk_info["is_afk"] = True
     afk_info["reason"] = reason
 
-    await message.edit(f"<b>I'm going AFK.\n" f"Reason:</b> <i>{reason}</i>")
+    await message.edit(f"<b>I'm going AFK.\nReason:</b> <i>{reason}</i>")
 
     db.set("core.afk", "afk_info", afk_info)
 
@@ -76,9 +75,7 @@ async def unafk(_, message):
         start = datetime.datetime.fromtimestamp(afk_info["start"])
         end = datetime.datetime.now().replace(microsecond=0)
         afk_time = end - start
-        await message.edit(
-            f"<b>I'm not AFK anymore.\n" f"I was afk {afk_time}</b>"
-        )
+        await message.edit(f"<b>I'm not AFK anymore.\nI was afk {afk_time}</b>")
         afk_info["is_afk"] = False
     else:
         await message.edit("<b>You weren't afk</b>")

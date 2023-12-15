@@ -15,14 +15,14 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
-import sys
 import subprocess
+import sys
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from utils.misc import modules_help, prefix, requirements_list
 from utils.db import db
+from utils.misc import modules_help, prefix, requirements_list
 from utils.scripts import format_exc, restart
 
 
@@ -68,20 +68,18 @@ async def update(_, message: Message):
     try:
         subprocess.run([sys.executable, "-m", "pip", "install", "-U", "pip"])
         subprocess.run(["git", "pull"])
-        subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "-U",
-                "-r",
-                "requirements.txt",
-            ]
-        )
-        subprocess.run(
-            [sys.executable, "-m", "pip", "install", "-U", *requirements_list]
-        )
+        subprocess.run([
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "-U",
+            "-r",
+            "requirements.txt",
+        ])
+        subprocess.run([
+            sys.executable, "-m", "pip", "install", "-U", *requirements_list
+        ])
     except Exception as e:
         await message.edit(format_exc(e))
         db.remove("core.updater", "restart_info")
@@ -91,6 +89,9 @@ async def update(_, message: Message):
 
 
 modules_help["updater"] = {
-    "update": "Update the userbot. If new core modules are avaliable, they will be installed",
+    "update": (
+        "Update the userbot. If new core modules are avaliable, they will be"
+        " installed"
+    ),
     "restart": "Restart userbot",
 }

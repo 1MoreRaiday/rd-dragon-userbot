@@ -19,10 +19,10 @@ import os
 from io import BytesIO
 
 import requests
-from pyrogram import Client, filters, errors, types
+from pyrogram import Client, errors, filters, types
 
 from utils.misc import modules_help, prefix
-from utils.scripts import with_reply, format_exc, resize_image
+from utils.scripts import format_exc, resize_image, with_reply
 
 
 @Client.on_message(filters.command(["q", "quote"], prefix) & filters.me)
@@ -82,7 +82,7 @@ async def quote_cmd(client: Client, message: types.Message):
     response = requests.post(url, json=params)
     if not response.ok:
         return await message.edit(
-            f"<b>Quotes API error!</b>\n" f"<code>{response.text}</code>"
+            f"<b>Quotes API error!</b>\n<code>{response.text}</code>"
         )
 
     resized = resize_image(
@@ -107,13 +107,11 @@ async def fake_quote_cmd(client: Client, message: types.Message):
     send_for_me = "!me" in message.command or "!ls" in message.command
     no_reply = "!noreply" in message.command or "!nr" in message.command
 
-    fake_quote_text = " ".join(
-        [
-            arg
-            for arg in message.command[1:]
-            if arg not in ["!png", "!file", "!me", "!ls", "!noreply", "!nr"]
-        ]  # remove some special arg words
-    )
+    fake_quote_text = " ".join([
+        arg
+        for arg in message.command[1:]
+        if arg not in ["!png", "!file", "!me", "!ls", "!noreply", "!nr"]
+    ])  # remove some special arg words
 
     if not fake_quote_text:
         return await message.edit("<b>Fake quote text is empty</b>")
@@ -195,13 +193,11 @@ async def render_message(app: Client, message: types.Message) -> dict:
     entities = []
     if message.entities:
         for entity in message.entities:
-            entities.append(
-                {
-                    "offset": entity.offset,
-                    "length": entity.length,
-                    "type": str(entity.type).split(".")[-1].lower(),
-                }
-            )
+            entities.append({
+                "offset": entity.offset,
+                "length": entity.length,
+                "type": str(entity.type).split(".")[-1].lower(),
+            })
 
     def move_forwards(msg: types.Message):
         if msg.forward_from:
@@ -238,9 +234,7 @@ async def render_message(app: Client, message: types.Message) -> dict:
                 author["rank"] = getattr(member, "title", "") or (
                     "owner"
                     if member.status == "creator"
-                    else "admin"
-                    if member.status == "administrator"
-                    else ""
+                    else "admin" if member.status == "administrator" else ""
                 )
 
         if from_user.photo:
@@ -324,65 +318,149 @@ def get_reply_text(reply: types.Message) -> str:
     return (
         "📷 Photo" + ("\n" + reply.caption if reply.caption else "")
         if reply.photo
-        else get_reply_poll_text(reply.poll)
-        if reply.poll
-        else "📍 Location"
-        if reply.location or reply.venue
-        else "👤 Contact"
-        if reply.contact
-        else "🖼 GIF"
-        if reply.animation
-        else "🎧 Music" + get_audio_text(reply.audio)
-        if reply.audio
-        else "📹 Video"
-        if reply.video
-        else "📹 Videomessage"
-        if reply.video_note
-        else "🎵 Voice"
-        if reply.voice
-        else (reply.sticker.emoji + " " if reply.sticker.emoji else "")
-        + "Sticker"
-        if reply.sticker
-        else "💾 File " + reply.document.file_name
-        if reply.document
-        else "🎮 Game"
-        if reply.game
-        else "🎮 set new record"
-        if reply.game_high_score
-        else f"{reply.dice.emoji} - {reply.dice.value}"
-        if reply.dice
         else (
-            "👤 joined the group"
-            if reply.new_chat_members[0].id == reply.from_user.id
-            else "👤 invited %s to the group"
-            % (get_full_name(reply.new_chat_members[0]))
+            get_reply_poll_text(reply.poll)
+            if reply.poll
+            else (
+                "📍 Location"
+                if reply.location or reply.venue
+                else (
+                    "👤 Contact"
+                    if reply.contact
+                    else (
+                        "🖼 GIF"
+                        if reply.animation
+                        else (
+                            "🎧 Music" + get_audio_text(reply.audio)
+                            if reply.audio
+                            else (
+                                "📹 Video"
+                                if reply.video
+                                else (
+                                    "📹 Videomessage"
+                                    if reply.video_note
+                                    else (
+                                        "🎵 Voice"
+                                        if reply.voice
+                                        else (
+                                            (
+                                                reply.sticker.emoji + " "
+                                                if reply.sticker.emoji
+                                                else ""
+                                            )
+                                            + "Sticker"
+                                            if reply.sticker
+                                            else (
+                                                "💾 File "
+                                                + reply.document.file_name
+                                                if reply.document
+                                                else (
+                                                    "🎮 Game"
+                                                    if reply.game
+                                                    else (
+                                                        "🎮 set new record"
+                                                        if reply.game_high_score
+                                                        else (
+                                                            f"{reply.dice.emoji} -"
+                                                            f" {reply.dice.value}"
+                                                            if reply.dice
+                                                            else (
+                                                                (
+                                                                    "👤 joined"
+                                                                    " the group"
+                                                                    if reply.new_chat_members[
+                                                                        0
+                                                                    ].id
+                                                                    == reply.from_user.id
+                                                                    else (
+                                                                        "👤 invited"
+                                                                        " %s to"
+                                                                        " the group"
+                                                                    )
+                                                                    % (
+                                                                        get_full_name(
+                                                                            reply.new_chat_members[
+                                                                                0
+                                                                            ]
+                                                                        )
+                                                                    )
+                                                                )
+                                                                if reply.new_chat_members
+                                                                else (
+                                                                    (
+                                                                        "👤 left"
+                                                                        " the group"
+                                                                        if reply.left_chat_member.id
+                                                                        == reply.from_user.id
+                                                                        else (
+                                                                            "👤 removed %s"
+                                                                        )
+                                                                        % (
+                                                                            get_full_name(
+                                                                                reply.left_chat_member
+                                                                            )
+                                                                        )
+                                                                    )
+                                                                    if reply.left_chat_member
+                                                                    else (
+                                                                        "✏ changed"
+                                                                        " group"
+                                                                        " name"
+                                                                        f" to {reply.new_chat_title}"
+                                                                        if reply.new_chat_title
+                                                                        else (
+                                                                            "🖼 changed"
+                                                                            " group"
+                                                                            " photo"
+                                                                            if reply.new_chat_photo
+                                                                            else (
+                                                                                "🖼 removed group photo"
+                                                                                if reply.delete_chat_photo
+                                                                                else (
+                                                                                    "📍 pinned message"
+                                                                                    if reply.pinned_message
+                                                                                    else (
+                                                                                        "🎤 started a new video chat"
+                                                                                        if reply.video_chat_started
+                                                                                        else (
+                                                                                            "🎤 ended the video chat"
+                                                                                            if reply.video_chat_ended
+                                                                                            else (
+                                                                                                "🎤 invited participants to the video chat"
+                                                                                                if reply.video_chat_members_invited
+                                                                                                else (
+                                                                                                    "👥 created the group"
+                                                                                                    if reply.group_chat_created
+                                                                                                    or reply.supergroup_chat_created
+                                                                                                    else (
+                                                                                                        "👥 created the channel"
+                                                                                                        if reply.channel_chat_created
+                                                                                                        else reply.text
+                                                                                                        or "unsupported message"
+                                                                                                    )
+                                                                                                )
+                                                                                            )
+                                                                                        )
+                                                                                    )
+                                                                                )
+                                                                            )
+                                                                        )
+                                                                    )
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
         )
-        if reply.new_chat_members
-        else (
-            "👤 left the group"
-            if reply.left_chat_member.id == reply.from_user.id
-            else "👤 removed %s" % (get_full_name(reply.left_chat_member))
-        )
-        if reply.left_chat_member
-        else f"✏ changed group name to {reply.new_chat_title}"
-        if reply.new_chat_title
-        else "🖼 changed group photo"
-        if reply.new_chat_photo
-        else "🖼 removed group photo"
-        if reply.delete_chat_photo
-        else "📍 pinned message"
-        if reply.pinned_message
-        else "🎤 started a new video chat"
-        if reply.video_chat_started
-        else "🎤 ended the video chat"
-        if reply.video_chat_ended
-        else "🎤 invited participants to the video chat"
-        if reply.video_chat_members_invited
-        else "👥 created the group"
-        if reply.group_chat_created or reply.supergroup_chat_created
-        else "👥 created the channel"
-        if reply.channel_chat_created
-        else reply.text or "unsupported message"
     )
 
 
@@ -404,7 +482,9 @@ def get_poll_text(poll: types.Poll) -> str:
 def get_reply_poll_text(poll: types.Poll) -> str:
     if poll.is_anonymous:
         text = (
-            "📊 Anonymous poll" if poll.type == "regular" else "📊 Anonymous quiz"
+            "📊 Anonymous poll"
+            if poll.type == "regular"
+            else "📊 Anonymous quiz"
         )
     else:
         text = "📊 Poll" if poll.type == "regular" else "📊 Quiz"
@@ -422,8 +502,10 @@ def get_full_name(user: types.User) -> str:
 
 
 modules_help["squotes"] = {
-    "q [reply]* [count 1-15] [!png] [!me] [!noreply]": "Generate a quote\n"
-    "Available options: !png — send as PNG, !me — send quote to"
-    "saved messages, !noreply — generate quote without reply",
+    "q [reply]* [count 1-15] [!png] [!me] [!noreply]": (
+        "Generate a quote\n"
+        "Available options: !png — send as PNG, !me — send quote to"
+        "saved messages, !noreply — generate quote without reply"
+    ),
     "fq [reply]* [!png] [!me] [!noreply] [text]*": "Generate a fake quote",
 }

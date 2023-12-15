@@ -15,33 +15,32 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import re
-from datetime import timedelta, datetime
+from contextlib import suppress
+from datetime import datetime, timedelta
 from time import time
 from typing import Dict, Union
-from contextlib import suppress
 
 from pyrogram import Client, ContinuePropagation, filters
 from pyrogram.errors import (
-    UserAdminInvalid,
     ChatAdminRequired,
     PeerIdInvalid,
-    UsernameInvalid,
     RPCError,
+    UserAdminInvalid,
+    UsernameInvalid,
 )
 from pyrogram.raw import functions, types
-from pyrogram.types import Message, ChatPermissions, ChatPrivileges
+from pyrogram.types import ChatPermissions, ChatPrivileges, Message
 from pyrogram.utils import (
-    get_channel_id,
-    MAX_USER_ID,
-    MIN_CHAT_ID,
     MAX_CHANNEL_ID,
+    MAX_USER_ID,
     MIN_CHANNEL_ID,
+    MIN_CHAT_ID,
+    get_channel_id,
 )
 
 from utils.db import db
-from utils.scripts import text, format_exc, with_reply
 from utils.misc import modules_help, prefix
-
+from utils.scripts import format_exc, text, with_reply
 
 db_cache: dict = db.get_collection("core.ats")
 
@@ -354,7 +353,8 @@ async def kick_command(client: Client, message: Message):
                 )
 
                 await message.edit(
-                    f"<b>{message.reply_to_message.from_user.first_name}</b> <code>kicked!</code>"
+                    f"<b>{message.reply_to_message.from_user.first_name}</b>"
+                    " <code>kicked!</code>"
                     + f"\n{'<b>Cause:</b> <i>' + text_c.split(maxsplit=1)[1] + '</i>' if len(text_c.split()) > 1 else ''}"
                 )
             except UserAdminInvalid:
@@ -592,7 +592,10 @@ async def tunmute_command(client: Client, message: Message):
 @Client.on_message(filters.command(["tmute_users"], prefix) & filters.me)
 async def tunmute_users_command(client: Client, message: Message):
     if message.chat.type not in ["private", "channel"]:
-        text = f"<b>All users</b> <code>{message.chat.title}</code> <b>who are now in tmute</b>\n\n"
+        text = (
+            f"<b>All users</b> <code>{message.chat.title}</code> <b>who are now"
+            " in tmute</b>\n\n"
+        )
         count = 0
         tmuted_users = db.get("core.ats", f"c{message.chat.id}", [])
         for user in tmuted_users:
@@ -646,7 +649,8 @@ async def unmute_command(client, message):
                     datetime.now() + timedelta(seconds=30),
                 )
                 await message.edit(
-                    f"<b>{message.reply_to_message.from_user.first_name}</b> <code>unmuted</code>"
+                    f"<b>{message.reply_to_message.from_user.first_name}</b>"
+                    " <code>unmuted</code>"
                     + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
                 )
             except UserAdminInvalid:
@@ -673,7 +677,8 @@ async def unmute_command(client, message):
                         datetime.now() + timedelta(seconds=30),
                     )
                     await message.edit(
-                        f"<b>{user_to_unmute.first_name}</b> <code>unmuted!</code>"
+                        f"<b>{user_to_unmute.first_name}</b>"
+                        " <code>unmuted!</code>"
                         + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}"
                     )
                 except UserAdminInvalid:
@@ -759,7 +764,8 @@ async def mute_command(client: Client, message: Message):
                     ChatPermissions(),
                 )
                 message_text = (
-                    f"<b>{message.reply_to_message.from_user.first_name}</b> <code> was muted indefinitely</code>"
+                    f"<b>{message.reply_to_message.from_user.first_name}</b>"
+                    " <code> was muted indefinitely</code>"
                     + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
                 )
             await message.edit(message_text)
@@ -836,7 +842,8 @@ async def mute_command(client: Client, message: Message):
                             "minutes": mute_seconds % 86400 % 3600 // 60,
                         }
                         message_text = (
-                            f"<b>{user_to_unmute.first_name}</b> <code> was muted for"
+                            f"<b>{user_to_unmute.first_name}</b> <code> was"
+                            " muted for"
                             f" {((str(mute_time['days']) + ' day') if mute_time['days'] > 0 else '') + ('s' if mute_time['days'] > 1 else '')}"
                             f" {((str(mute_time['hours']) + ' hour') if mute_time['hours'] > 0 else '') + ('s' if mute_time['hours'] > 1 else '')}"
                             f" {((str(mute_time['minutes']) + ' minute') if mute_time['minutes'] > 0 else '') + ('s' if mute_time['minutes'] > 1 else '')}</code>"
@@ -851,7 +858,8 @@ async def mute_command(client: Client, message: Message):
                             ChatPermissions(),
                         )
                         message_text = (
-                            f"<b>{user_to_unmute.first_name}</b> <code> was muted indefinitely</code>"
+                            f"<b>{user_to_unmute.first_name}</b> <code> was"
+                            " muted indefinitely</code>"
                             + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}"
                         )
                     await message.edit(message_text)
@@ -900,7 +908,8 @@ async def demote_command(client: Client, message: Message):
                     ),
                 )
                 await message.edit(
-                    f"<b>{message.reply_to_message.from_user.first_name}</b> <code>demoted!</code>"
+                    f"<b>{message.reply_to_message.from_user.first_name}</b>"
+                    " <code>demoted!</code>"
                     + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
                 )
             except UserAdminInvalid:
@@ -935,7 +944,8 @@ async def demote_command(client: Client, message: Message):
                         ),
                     )
                     await message.edit(
-                        f"<b>{promote_user.first_name}</b> <code>demoted!</code>"
+                        f"<b>{promote_user.first_name}</b>"
+                        " <code>demoted!</code>"
                         + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}"
                     )
                 except UserAdminInvalid:
@@ -982,7 +992,8 @@ async def promote_command(client: Client, message: Message):
                         cause.split(maxsplit=1)[1],
                     )
                 await message.edit(
-                    f"<b>{message.reply_to_message.from_user.first_name}</b> <code>promoted!</code>"
+                    f"<b>{message.reply_to_message.from_user.first_name}</b>"
+                    " <code>promoted!</code>"
                     + f"\n{'<b>Prefix:</b> <i>' + cause.split(' ', maxsplit=1)[1] + '</i>' if len(cause.split()) > 1 else ''}"
                 )
             except UserAdminInvalid:
@@ -1016,7 +1027,8 @@ async def promote_command(client: Client, message: Message):
                             f"\n{cause.split(' ', maxsplit=2)[2] if len(cause.split()) > 2 else None}",
                         )
                     await message.edit(
-                        f"<b>{promote_user.first_name}</b> <code>promoted!</code>"
+                        f"<b>{promote_user.first_name}</b>"
+                        " <code>promoted!</code>"
                         + f"\n{'<b>Prefix:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}"
                     )
                 except UserAdminInvalid:
@@ -1130,7 +1142,8 @@ async def delete_history(client: Client, message: Message):
                         )
                     )
                     await message.edit(
-                        f"<code>History from </code><b>{name}</b><code> was deleted!</code>"
+                        f"<code>History from </code><b>{name}</b><code> was"
+                        " deleted!</code>"
                         + f"\n{'<b>Cause:</b> <i>' + cause.split(' ', maxsplit=2)[2] + '</i>' if len(cause.split()) > 2 else ''}"
                     )
                 except UserAdminInvalid:
@@ -1323,26 +1336,40 @@ async def welcome(_, message: Message):
 
 
 modules_help["admintool"] = {
-    "ban [reply]/[username/id]* [reason] [report_spam] [delete_history]": "ban user in chat",
+    "ban [reply]/[username/id]* [reason] [report_spam] [delete_history]": (
+        "ban user in chat"
+    ),
     "unban [reply]/[username/id]* [reason]": "unban user in chat",
-    "kick [reply]/[userid]* [reason] [report_spam] [delete_history]": "kick user out of chat",
+    "kick [reply]/[userid]* [reason] [report_spam] [delete_history]": (
+        "kick user out of chat"
+    ),
     "mute [reply]/[userid]* [reason] [1m]/[1h]/[1d]/[1w]": "mute user in chat",
     "unmute [reply]/[userid]* [reason]": "unmute user in chat",
     "promote [reply]/[userid]* [prefix]": "promote user in chat",
     "demote [reply]/[userid]* [reason]": "demote user in chat",
-    "tmute [reply]/[username/id]* [reason]": "delete all new messages from user in chat",
-    "tunmute [reply]/[username/id]* [reason]": "stop deleting all messages from user in chat",
+    "tmute [reply]/[username/id]* [reason]": (
+        "delete all new messages from user in chat"
+    ),
+    "tunmute [reply]/[username/id]* [reason]": (
+        "stop deleting all messages from user in chat"
+    ),
     "tmute_users": "list of tmuted (.tmute) users",
     "antich [enable/disable]": "turn on/off blocking channels in this chat",
-    "delete_history [reply]/[username/id]* [reason]": "delete history from member in chat",
+    "delete_history [reply]/[username/id]* [reason]": (
+        "delete history from member in chat"
+    ),
     "report_spam [reply]*": "report spam message in chat",
     "pin [reply]*": "Pin replied message",
     "unpin [reply]*": "Unpin replied message",
     "ro": "enable read-only mode",
     "unro": "disable read-only mode",
-    "antiraid [on|off]": "when enabled, anyone who writes message will be blocked. Useful in raids. "
-    "Running without arguments equals to toggling state",
-    "welcome [text]*": "enable auto-welcome to new users in groups. "
-    "Running without text equals to disable",
+    "antiraid [on|off]": (
+        "when enabled, anyone who writes message will be blocked. Useful in"
+        " raids. Running without arguments equals to toggling state"
+    ),
+    "welcome [text]*": (
+        "enable auto-welcome to new users in groups. "
+        "Running without text equals to disable"
+    ),
     "kickdel": "Kick all deleted accounts",
 }

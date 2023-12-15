@@ -21,7 +21,8 @@ async def global_mention_clear(client: Client, message: Message):
         result = await client.invoke(request)
     except FloodWait as e:
         await message.edit_text(
-            f"<b>FloodWait received. Wait {e.value} seconds before trying again</b>"
+            f"<b>FloodWait received. Wait {e.value} seconds before trying"
+            " again</b>"
         )
         return
     await message.delete()
@@ -52,7 +53,8 @@ async def global_reaction_clear(client: Client, message: Message):
         result = await client.invoke(request)
     except FloodWait as e:
         await message.edit_text(
-            f"<b>FloodWait received. Wait {e.value} seconds before trying again</b>"
+            f"<b>FloodWait received. Wait {e.value} seconds before trying"
+            " again</b>"
         )
         return
     await message.delete()
@@ -72,5 +74,7 @@ modules_help["clear_notifs"] = {
     "clear_@": "clear all mentions in this chat",
     "clear_all_@": "clear all mentions in all chats",
     "clear_reacts": "clear all reactions in this chat",
-    "clear_all_reacts": "clear all reactions in all chats (except private chats)",
+    "clear_all_reacts": (
+        "clear all reactions in all chats (except private chats)"
+    ),
 }

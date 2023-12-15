@@ -1,15 +1,15 @@
-from pyrogram import Client, filters, ContinuePropagation, errors
+from pyrogram import Client, ContinuePropagation, errors, filters
 from pyrogram.types import (
-    Message,
+    InputMediaAudio,
     InputMediaDocument,
     InputMediaPhoto,
     InputMediaVideo,
-    InputMediaAudio,
+    Message,
 )
 
+from utils.db import db
 from utils.misc import modules_help, prefix
 from utils.scripts import format_exc
-from utils.db import db
 
 
 def get_filters_chat(chat_id):
@@ -126,7 +126,8 @@ async def filter_handler(client: Client, message: Message):
     try:
         if len(message.text.split()) < 2:
             return await message.edit(
-                f"<b>Usage</b>: <code>{prefix}filter [name] (Reply required)</code>"
+                f"<b>Usage</b>: <code>{prefix}filter [name] (Reply"
+                " required)</code>"
             )
         name = message.text.split(maxsplit=1)[1].lower()
         chat_filters = get_filters_chat(message.chat.id)
@@ -200,7 +201,7 @@ async def filters_handler(client: Client, message: Message):
             key, item = a
             key = key.replace("<", "").replace(">", "")
             text += f"{index}. <code>{key}</code>\n"
-        text = f"<b>Your filters in current chat</b>:\n\n" f"{text}"
+        text = f"<b>Your filters in current chat</b>:\n\n{text}"
         text = text[:4096]
         return await message.edit(text)
     except Exception as e:

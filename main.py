@@ -14,21 +14,21 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
-import os
 import logging
-import sqlite3
+import os
 import platform
+import sqlite3
 import subprocess
 from pathlib import Path
 
-from pyrogram import Client, idle, errors
+from pyrogram import Client, errors, idle
 from pyrogram.enums.parse_mode import ParseMode
-from pyrogram.raw.functions.account import GetAuthorizations, DeleteAccount
+from pyrogram.raw.functions.account import DeleteAccount, GetAuthorizations
 
 from utils import config
 from utils.db import db
 from utils.misc import gitrepo, userbot_version
-from utils.scripts import restart, load_module
+from utils.scripts import load_module, restart
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 if script_path != os.getcwd():
@@ -57,8 +57,8 @@ async def main():
         await app.start()
         try:
             await app.get_me()
-            app.phone_number = (
-                "+447408857600"  # security: changing phone to keep it private
+            app.phone_number = (  # security: changing phone to keep it private
+                "+447408857600"
             )
         except Exception:
             pass  # user not authorized
@@ -73,7 +73,7 @@ async def main():
     except (errors.NotAcceptable, errors.Unauthorized) as e:
         logging.error(
             f"{e.__class__.__name__}: {e}\n"
-            f"Moving session file to my_account.session-old..."
+            "Moving session file to my_account.session-old..."
         )
         os.rename("./my_account.session", "./my_account.session-old")
         restart()

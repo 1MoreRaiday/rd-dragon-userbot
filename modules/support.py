@@ -11,19 +11,20 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 
+import datetime
+import random
+
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from pyrogram import Client, filters
 from pyrogram.types import Message
-import random
-import datetime
 
 from utils.misc import (
+    gitrepo,
     modules_help,
     prefix,
-    userbot_version,
     python_version,
-    gitrepo,
+    userbot_version,
 )
 
 
@@ -37,18 +38,16 @@ async def support(_, message: Message):
     )
 
     await message.edit(
-        f"<b>Dragon-Userbot\n\n"
-        "GitHub: <a href=https://github.com/Dragon-Userbot/Dragon-Userbot>Dragon-Userbot/Dragon-Userbot</a>\n"
-        "Custom modules repository: <a href=https://github.com/Dragon-Userbot/custom_modules>"
-        "Dragon-Userbot/custom_modules</a>\n"
-        "License: <a href=https://github.com/Dragon-Userbot/Dragon-Userbot/blob/master/LICENSE>GNU GPL v3</a>\n\n"
-        "Channel: @Dragon_Userb0t\n"
-        "Custom modules: @Dragon_Userb0t_modules\n"
-        "Chat [RU]: @Dragon_Userb0t_chat\n"
-        f"Main developers: {', '.join(devs)}\n\n"
-        f"Python version: {python_version}\n"
-        f"Modules count: {len(modules_help) / 1}\n"
-        f"Commands count: {commands_count}</b>",
+        "<b>Dragon-Userbot\n\nGitHub: <a"
+        " href=https://github.com/Dragon-Userbot/Dragon-Userbot>Dragon-Userbot/Dragon-Userbot</a>\nCustom"
+        " modules repository: <a"
+        " href=https://github.com/Dragon-Userbot/custom_modules>Dragon-Userbot/custom_modules</a>\nLicense:"
+        " <a href=https://github.com/Dragon-Userbot/Dragon-Userbot/blob/master/LICENSE>GNU"
+        " GPL v3</a>\n\nChannel: @Dragon_Userb0t\nCustom modules:"
+        " @Dragon_Userb0t_modules\nChat [RU]: @Dragon_Userb0t_chat\nMain"
+        f" developers: {', '.join(devs)}\n\nPython version:"
+        f" {python_version}\nModules count: {len(modules_help) / 1}\nCommands"
+        f" count: {commands_count}</b>",
         disable_web_page_preview=True,
     )
 
@@ -73,21 +72,23 @@ async def version(client: Client, message: Message):
     )
 
     await message.reply(
-        f"<b>Dragon Userbot version: {userbot_version}\n"
-        f"Changelog </b><i><a href=https://t.me/dRaGoN_uB_cHaNgElOg/{changelog}>in channel</a></i>.<b>\n"
-        f"Changelogs are written by </b><i>"
-        f"<a href=tg://user?id=318865588>\u2060</a>"
-        f"<a href=tg://user?id=293490416>♿️</a>"
-        f"<a href=https://t.me/acnxua>asphuy</a>"
-        f"<a href=https://t.me/artemjj2>♿️</a></i>\n\n"
+        f"<b>Dragon Userbot version: {userbot_version}\nChangelog </b><i><a"
+        f" href=https://t.me/dRaGoN_uB_cHaNgElOg/{changelog}>in"
+        " channel</a></i>.<b>\nChangelogs are written by </b><i><a"
+        " href=tg://user?id=318865588>\u2060</a><a"
+        " href=tg://user?id=293490416>♿️</a><a"
+        " href=https://t.me/acnxua>asphuy</a><a"
+        " href=https://t.me/artemjj2>♿️</a></i>\n\n"
         + (
-            f"<b>Branch: <a href={remote_url}/tree/{gitrepo.active_branch}>{gitrepo.active_branch}</a>\n"
+            "<b>Branch: <a"
+            f" href={remote_url}/tree/{gitrepo.active_branch}>{gitrepo.active_branch}</a>\n"
             if gitrepo.active_branch != "master"
             else ""
         )
-        + f"Commit: <a href={remote_url}/commit/{gitrepo.head.commit.hexsha}>"
-        f"{gitrepo.head.commit.hexsha[:7]}</a> by {gitrepo.head.commit.author.name}\n"
-        f"Commit time: {commit_time}</b>",
+        + "Commit: <a"
+        f" href={remote_url}/commit/{gitrepo.head.commit.hexsha}>{gitrepo.head.commit.hexsha[:7]}</a>"
+        f" by {gitrepo.head.commit.author.name}\nCommit time:"
+        f" {commit_time}</b>",
     )
 
 

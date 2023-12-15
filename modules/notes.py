@@ -14,13 +14,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from pyrogram import Client, filters, errors
+from pyrogram import Client, errors, filters
 from pyrogram.types import (
-    Message,
-    InputMediaPhoto,
-    InputMediaVideo,
     InputMediaAudio,
     InputMediaDocument,
+    InputMediaPhoto,
+    InputMediaVideo,
+    Message,
 )
 
 from utils.db import db
@@ -61,7 +61,8 @@ async def save_note(client: Client, message: Message):
                     )
                 except errors.ChatForwardsRestricted:
                     await message.edit(
-                        "<b>Forwarding messages is restricted by chat admins</b>"
+                        "<b>Forwarding messages is restricted by chat"
+                        " admins</b>"
                     )
                     return
                 note = {
@@ -126,7 +127,7 @@ async def note_send(client: Client, message: Message):
             except errors.RPCError:
                 await message.edit(
                     "<b>Sorry, but this note is unavaliable.\n\n"
-                    f"You can delete this note with "
+                    "You can delete this note with "
                     f"<code>{prefix}clear {note_name}</code></b>"
                 )
                 return

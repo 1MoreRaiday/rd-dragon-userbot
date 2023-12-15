@@ -14,8 +14,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from subprocess import Popen, PIPE, TimeoutExpired
 import os
+from subprocess import PIPE, Popen, TimeoutExpired
 from time import perf_counter
 
 from pyrogram import Client, filters
@@ -52,7 +52,10 @@ async def shell(_, message: Message):
             text += f"<b>Output:</b>\n<code>{stdout}</code>\n\n"
         if stderr:
             text += f"<b>Error:</b>\n<code>{stderr}</code>\n\n"
-        text += f"<b>Completed in {round(stop_time - start_time, 5)} seconds with code {cmd_obj.returncode}</b>"
+        text += (
+            f"<b>Completed in {round(stop_time - start_time, 5)} seconds with"
+            f" code {cmd_obj.returncode}</b>"
+        )
     await message.edit(text)
     cmd_obj.kill()
 

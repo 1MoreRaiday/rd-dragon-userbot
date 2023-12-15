@@ -19,9 +19,9 @@
 import time
 from datetime import datetime
 from html import escape
+from textwrap import dedent
 
-from pyrogram import Client, filters
-from pyrogram import ContinuePropagation
+from pyrogram import Client, ContinuePropagation, filters
 from pyrogram.errors import RPCError
 from pyrogram.raw.functions.account import GetAuthorizations, ResetAuthorization
 from pyrogram.raw.types import UpdateServiceNotification
@@ -29,8 +29,6 @@ from pyrogram.types import Message
 
 from utils.db import db
 from utils.misc import modules_help, prefix
-from textwrap import dedent
-from datetime import datetime
 
 auth_hashes = db.get("core.sessionkiller", "auths_hashes", [])
 
@@ -42,14 +40,15 @@ async def sessions_list(client: Client, message: Message):
     for num, session in enumerate(sessions, 1):
         formatted_sessions.append(
             (
-                "<b>{num}</b>. <b>{model}</b> on <code>{platform}</code>\n"
-                "<b>Hash:</b> {hash}\n"
-                "<b>App name:</b> <code>{app_name}</code> v.{version}\n"
-                "<b>Created (last activity):</b> {created} ({last_activity})\n"
-                "<b>IP and location: </b>: <code>{ip}</code> (<i>{location}</i>)\n"
-                "<b>Official status:</b> <code>{official}</code>\n"
-                "<b>2FA accepted:</b> <code>{password_pending}</code>\n"
-                "<b>Can accept calls / secret chats:</b> {calls} / {secret_chats}"
+                "<b>{num}</b>. <b>{model}</b> on"
+                " <code>{platform}</code>\n<b>Hash:</b> {hash}\n<b>App"
+                " name:</b> <code>{app_name}</code> v.{version}\n<b>Created"
+                " (last activity):</b> {created} ({last_activity})\n<b>IP and"
+                " location: </b>: <code>{ip}</code>"
+                " (<i>{location}</i>)\n<b>Official status:</b>"
+                " <code>{official}</code>\n<b>2FA accepted:</b>"
+                " <code>{password_pending}</code>\n<b>Can accept calls / secret"
+                " chats:</b> {calls} / {secret_chats}"
             ).format(
                 num=num,
                 model=escape(session.device_model),
@@ -76,9 +75,9 @@ async def sessions_list(client: Client, message: Message):
                 official="✅" if session.official_app else "❌️",
                 password_pending="❌️️" if session.password_pending else "✅",
                 calls="❌️️" if session.call_requests_disabled else "✅",
-                secret_chats="❌️️"
-                if session.encrypted_requests_disabled
-                else "✅",
+                secret_chats=(
+                    "❌️️" if session.encrypted_requests_disabled else "✅"
+                ),
             )
         )
     answer = "<b>Active sessions at your account:</b>\n\n"
@@ -102,13 +101,13 @@ async def sessionkiller(client: Client, message: Message):
     if len(message.command) == 1:
         if db.get("core.sessionkiller", "enabled", False):
             await message.edit(
-                "<b>Sessionkiller status: enabled\n"
-                f"You can disable it with <code>{prefix}sessionkiller disable</code></b>"
+                "<b>Sessionkiller status: enabled\nYou can disable it with"
+                f" <code>{prefix}sessionkiller disable</code></b>"
             )
         else:
             await message.edit(
-                "<b>Sessionkiller status: disabled\n"
-                f"You can enable it with <code>{prefix}sessionkiller enable</code></b>"
+                "<b>Sessionkiller status: disabled\nYou can enable it with"
+                f" <code>{prefix}sessionkiller enable</code></b>"
             )
     elif message.command[1] in ["enable", "on", "1", "yes", "true"]:
         db.set("core.sessionkiller", "enabled", True)
@@ -155,16 +154,18 @@ async def check_new_login(
                 await client.invoke(ResetAuthorization(hash=auth.hash))
             except RPCError:
                 info_text = (
-                    "Someone tried to log in to your account. You can see this report because you"
-                    "turned on this feature. But I couldn't terminate attacker's session and "
-                    "⚠ <b>you must reset it manually</b>. You should change your 2FA password "
-                    "(if enabled), or set it.\n"
+                    "Someone tried to log in to your account. You can see this"
+                    " report because youturned on this feature. But I couldn't"
+                    " terminate attacker's session and ⚠ <b>you must reset it"
+                    " manually</b>. You should change your 2FA password (if"
+                    " enabled), or set it.\n"
                 )
             else:
                 info_text = (
-                    "Someone tried to log in to your account. Since you have enabled "
-                    "this feature, I deleted the attacker's session from your account. "
-                    "You should change your 2FA password (if enabled), or set it.\n"
+                    "Someone tried to log in to your account. Since you have"
+                    " enabled this feature, I deleted the attacker's session"
+                    " from your account. You should change your 2FA password"
+                    " (if enabled), or set it.\n"
                 )
             logined_time = datetime.utcfromtimestamp(
                 auth.date_created
@@ -172,19 +173,20 @@ async def check_new_login(
             full_report = (
                 "<b>!!! ACTION REQUIRED !!!</b>\n"
                 + info_text
-                + "Below is the information about the attacker that I got.\n\n"
-                f"Unique authorization hash: <code>{auth.hash}</code> (not valid anymore)\n"
-                f"Device model: <code>{escape(auth.device_model)}</code>\n"
-                f"Platform: <code>{escape(auth.platform)}</code>\n"
-                f"API ID: <code>{auth.api_id}</code>\n"
-                f"App name: <code>{escape(auth.app_name)}</code>\n"
-                f"App version: <code>{auth.app_version}</code>\n"
-                f"Logined at: <code>{logined_time}</code>\n"
-                f"IP: <code>{auth.ip}</code>\n"
-                f"Country: <code>{auth.country}</code>\n"
-                f'Official app: <b>{"yes" if auth.official_app else "no"}</b>\n\n'
-                f"<b>It is you? Type <code>{prefix}sk off</code> and try logging "
-                f"in again.</b>"
+                + "Below is the information about the attacker that I"
+                " got.\n\nUnique authorization hash:"
+                f" <code>{auth.hash}</code> (not valid anymore)\nDevice"
+                f" model: <code>{escape(auth.device_model)}</code>\nPlatform:"
+                f" <code>{escape(auth.platform)}</code>\nAPI ID:"
+                f" <code>{auth.api_id}</code>\nApp name:"
+                f" <code>{escape(auth.app_name)}</code>\nApp version:"
+                f" <code>{auth.app_version}</code>\nLogined at:"
+                f" <code>{logined_time}</code>\nIP:"
+                f" <code>{auth.ip}</code>\nCountry:"
+                f" <code>{auth.country}</code>\nOfficial app:"
+                f" <b>{'yes' if auth.official_app else 'no'}</b>\n\n<b>It is"
+                f" you? Type <code>{prefix}sk off</code> and try logging in"
+                " again.</b>"
             )
             # schedule sending report message so user will get notification
             schedule_date = int(time.time() + 15)
@@ -195,7 +197,9 @@ async def check_new_login(
 
 
 modules_help["sessions"] = {
-    "sessionkiller [enable|disable]": "When enabled, every new session will be terminated.\n"
-    "Useful for additional protection for your account",
+    "sessionkiller [enable|disable]": (
+        "When enabled, every new session will be terminated.\n"
+        "Useful for additional protection for your account"
+    ),
     "sessions": "List all sessions on your account",
 }
