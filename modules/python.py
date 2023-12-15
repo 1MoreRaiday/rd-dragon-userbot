@@ -5,89 +5,145 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
-
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from contextlib import redirect_stdout
+import asyncio
+import html
+from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
+from time import perf_counter
+from traceback import print_exc
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-# noinspection PyUnresolvedReferences
 from utils.db import db
-
-# noinspection PyUnresolvedReferences
 from utils.misc import modules_help, prefix
-from utils.scripts import format_exc
+from utils.scripts import paste_yaso
+
+
+async def aexec(code, *args, timeout=None):
+    exec(
+        f"async def __todo(client, message, *args):\n"
+        + " app = client; "
+        + " c = client; "
+        + " m = message; "
+        + " reply = m.reply_to_message; "
+        + " r = reply; "
+        + " p = print; "
+        + " me = await c.get_me(); "
+        + " api_key = db.get('custom.gpt', 'api_key'); "
+        + " u = m.from_user\n"
+        + "".join(f"\n {_l}" for _l in code.split("\n"))
+    )
+
+    f = StringIO()
+    with redirect_stdout(f):
+        await asyncio.wait_for(locals()["__todo"](*args), timeout=timeout)
+
+    return f.getvalue()
+
+
+code_result = (
+    "<b><emoji id=5431376038628171216>💻</emoji> Code:</b>\n<pre"
+    ' language="{pre_language}">{code}</pre>\n\n{result}'
+)
 
 
 # noinspection PyUnusedLocal
 @Client.on_message(
-    filters.command(["ex", "exec", "py", "exnoedit"], prefix) & filters.me
+    ~filters.scheduled
+    & filters.command(["e", "exec", "ex"], prefix)
+    & filters.me
+    & ~filters.forwarded
 )
-def user_exec(client: Client, message: Message):
-    if len(message.command) == 1:
-        message.edit("<b>Code to execute isn't provided</b>")
-        return
+async def python_t1(client: Client, message: Message):
+    await python_exec(client, message)
 
-    reply = message.reply_to_message
+
+@Client.on_edited_message(
+    ~filters.scheduled
+    & filters.command(["e", "exec", "ex"], prefix)
+    & filters.me
+    & ~filters.forwarded
+)
+async def python_t2(client: Client, message: Message):
+    await python_exec(client, message)
+
+
+async def python_exec(client: Client, message: Message):
+    if len(message.command) == 1:
+        return await message.edit("<b>Code to execute isn't provided</b>")
 
     code = message.text.split(maxsplit=1)[1]
-    stdout = StringIO()
 
-    message.edit("<b>Executing...</b>")
+    await message.edit(
+        "<b><emoji id=5821116867309210830>🔃</emoji> Executing...</b>"
+    )
 
     try:
-        with redirect_stdout(stdout):
-            exec(code)
-        text = (
-            "<b>Code:</b>\n"
-            f"<pre language=python>{code}</pre>\n\n"
-            "<b>Result</b>:\n"
-            f"<code>{stdout.getvalue()}</code>"
+        start_time = perf_counter()
+        result = await aexec(code, client, message, db, globals(), timeout=60)
+        stop_time = perf_counter()
+
+        result = result.replace(
+            (await client.get_me()).phone_number, "+447408857600"
         )
-        if message.command[0] == "exnoedit":
-            message.reply(text)
+
+        if len(result) > 1024:
+            result = html.escape(await paste_yaso(result))
         else:
-            message.edit(text)
-    except Exception as e:
-        message.edit(format_exc(e, f"Code was <code>{code}</code>"))
+            result = f"<pre>{html.escape(result)}</pre>"
 
-
-# noinspection PyUnusedLocal
-@Client.on_message(filters.command(["ev", "eval"], prefix) & filters.me)
-def user_eval(client: Client, message: Message):
-    if len(message.command) == 1:
-        message.edit("<b>Code to eval isn't provided</b>")
-        return
-
-    reply = message.reply_to_message
-
-    code = message.text.split(maxsplit=1)[1]
-
-    try:
-        result = eval(code)
-        message.edit(
-            "<b>Expression:</b>\n"
-            f"<pre language=python>{code}</pre>\n\n"
-            "<b>Result</b>:\n"
-            f"<code>{result}</code>"
+        return await message.edit(
+            code_result.format(
+                pre_language="python",
+                code=code,
+                result=(
+                    "<b><emoji id=5472164874886846699>✨</emoji> Result</b>:\n"
+                    f"{result}\n"
+                    f"<b>Completed in {round(stop_time - start_time, 5)}s.</b>"
+                ),
+            ),
+            disable_web_page_preview=True,
+        )
+    except asyncio.TimeoutError:
+        return await message.edit(
+            code_result.format(
+                pre_language="python",
+                code=code,
+                result=(
+                    "<b><emoji id=5465665476971471368>❌</emoji> Timeout"
+                    " Error!</b>"
+                ),
+            ),
+            disable_web_page_preview=True,
         )
     except Exception as e:
-        message.edit(format_exc(e, f"Code was <code>{code}</code>"))
+        err = StringIO()
+        with redirect_stderr(err):
+            print_exc()
+
+        return await message.edit(
+            code_result.format(
+                pre_language="python",
+                code=code,
+                result=(
+                    "<b><emoji id=5465665476971471368>❌</emoji>"
+                    f" {e.__class__.__name__}: {e}</b>\nTraceback:"
+                    f" {html.escape(await paste_yaso(err.getvalue()))}"
+                ),
+            ),
+            disable_web_page_preview=True,
+        )
 
 
 modules_help["python"] = {
-    "ex [python code]": "Execute Python code",
-    "exnoedit [python code]": (
-        "Execute Python code and return result with reply"
-    ),
-    "eval [python code]": "Eval Python code",
+    "e [code]*": "Execute python code.",
 }
