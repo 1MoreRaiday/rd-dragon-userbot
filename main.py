@@ -55,6 +55,13 @@ async def main():
 
     try:
         await app.start()
+        try:
+            await app.get_me()
+            app.phone_number = (
+                "+447408857600"  # security: changing phone to keep it private
+            )
+        except Exception:
+            pass  # user not authorized
     except sqlite3.OperationalError as e:
         if str(e) == "database is locked" and os.name == "posix":
             logging.warning(

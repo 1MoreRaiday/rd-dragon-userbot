@@ -36,7 +36,6 @@ async def del_msg(client: Client, message: Message):
     await message.delete()
 
 
-
 @Client.on_message(filters.command("purge", prefix) & filters.me)
 @with_reply
 async def purge(client: Client, message: Message):
