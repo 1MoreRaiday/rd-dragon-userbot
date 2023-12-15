@@ -33,6 +33,7 @@ async def create_completion(
     message: Message,
     client: Client,
     oai: openai.AsyncClient,
+    messages: list[openai.types.chat.ChatCompletionMessageParam] = messages,
 ):
     try:
         return await oai.chat.completions.create(
@@ -101,11 +102,16 @@ async def gpt_no_context(client: Client, message: Message):
         return await message.edit(str(e))
 
     await message.edit("<b>Thinking...</b>")
-    response = await create_completion(message=message, client=client, oai=oai)
+    response = await create_completion(
+        message=message,
+        messages=[{"role": "user", "content": question}],
+        client=client,
+        oai=oai,
+    )
 
     if not isinstance(response, Message):
         await message.edit(
-            f'{mistune.html(response["choices"][0]["message"].content)}\n\n<b>Your'
+            f"{mistune.html(response.choices[0].message.content)}\n\n<b>Your"
             f" question was:</b> <code>{question}</code>",
         )
 
