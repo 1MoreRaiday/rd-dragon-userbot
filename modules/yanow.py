@@ -46,7 +46,7 @@ async def set_token(_: Client, message: Message):
 @Client.on_message(
     filters.command(["yanow", "ynow", "y", "н"], prefix) & filters.me
 )
-async def get_playing(client: Client, message: Message):
+async def get_now_playing(client: Client, message: Message):
     if not db.get("core.yanow", "token"):
         return await message.edit("<b>Yandex Music token not set.</b>")
 
@@ -104,6 +104,7 @@ async def get_playing(client: Client, message: Message):
         ),
         file_name=f"{artists} - {title}.mp3",
         reply_to_message_id=message.reply_to_message_id,
+        message_thread_id=message.message_thread_id,
     )
     await message.delete()
 
