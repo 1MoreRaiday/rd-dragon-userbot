@@ -23,7 +23,7 @@ import importlib
 import subprocess
 from io import BytesIO
 from types import ModuleType
-from typing import Dict
+from typing import Dict, Union
 
 from PIL import Image
 from pyrogram import Client, errors, types
@@ -288,3 +288,32 @@ def parse_meta_comments(code: str) -> Dict[str, str]:
         return {}
 
     return {groups[i]: groups[i + 1] for i in range(0, len(groups), 2)}
+
+
+def get_args_raw(
+    message: Union[types.Message, str], use_reply: bool = None
+) -> str:
+    """Returns text after command.
+
+    Args:
+        message (Union[Message, str]): Message or text.
+
+        use_reply (bool, optional): Try to get args from reply message if no args in message. Defaults to None.
+
+    Returns:
+        str: Text after command or empty string.
+    """
+    if isinstance(message, types.Message):
+        text = message.text or message.caption
+        args = text.split(maxsplit=1)[1] if len(text.split()) > 1 else ""
+
+        if use_reply and not args:
+            args = (
+                message.reply_to_message.text
+                or message.reply_to_message.caption
+            )
+
+    elif not isinstance(message, str):
+        return ""
+
+    return args or ""
