@@ -17,7 +17,9 @@
 import asyncio
 import importlib
 import os
+import random
 import re
+import string
 import subprocess
 import sys
 import traceback
@@ -25,6 +27,7 @@ from io import BytesIO
 from types import ModuleType
 from typing import Dict, Union
 
+import aiohttp
 from PIL import Image
 from pyrogram import Client, errors, types
 
@@ -319,3 +322,35 @@ def get_args_raw(
         return ""
 
     return args or ""
+
+
+def generate_random_string(length):
+    characters = string.ascii_letters + string.digits
+    return "".join(random.choice(characters) for _ in range(length))
+
+
+async def paste_yaso(code: str, expiration_time: int = 10080):
+    try:
+        async with aiohttp.ClientSession(
+            connector=aiohttp.TCPConnector(ssl=False)
+        ) as session:
+            async with session.post(
+                "https://api.yaso.su/v1/auth/guest",
+            ) as auth:
+                auth.raise_for_status()
+
+            async with session.post(
+                "https://api.yaso.su/v1/records",
+                json={
+                    "captcha": generate_random_string(569),
+                    "codeLanguage": "auto",
+                    "content": code,
+                    "expirationTime": expiration_time,
+                },
+            ) as paste:
+                paste.raise_for_status()
+                result = await paste.json()
+    except Exception:
+        return "Pasting failed"
+    else:
+        return f"https://yaso.su/{result['url']}"
