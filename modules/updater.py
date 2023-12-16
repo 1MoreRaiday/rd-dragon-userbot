@@ -5,12 +5,12 @@
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
-
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-
+#
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -38,11 +38,6 @@ async def restart_cmd(_, message: Message):
         },
     )
 
-    if "LAVHOST" in os.environ:
-        await message.edit("<b>Your lavHost is restarting...</b>")
-        os.system("lavhost restart")
-        return
-
     await message.edit("<b>Restarting...</b>")
     restart()
 
@@ -58,11 +53,6 @@ async def update(_, message: Message):
             "message_id": message.id,
         },
     )
-
-    if "LAVHOST" in os.environ:
-        await message.edit("<b>Your lavHost is updating...</b>")
-        os.system("lavhost update")
-        return
 
     await message.edit("<b>Updating...</b>")
     try:
