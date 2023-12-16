@@ -39,9 +39,7 @@ async def protector_t2(client: Client, message: Message):
 
 
 async def hide(client: Client, message: Message):
-    if not db.get("core.protector", "phone") and not db.get(
-        "core.protector", "id"
-    ):
+    if not db.get("core.protector", "phone"):
         db.set("core.protector", "phone", (await client.get_me()).phone_number)
         db.set("core.protector", "id", (await client.get_me()).id)
     if (
