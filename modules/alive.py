@@ -58,7 +58,9 @@ async def alive(client: Client, message: Message):
     reply_msg += f"\n<b>Uptime:</b> <code>{uptime}</code>\n"
     await message.delete()
     end = time.perf_counter()
-    reply_msg += f"<b>Ping:</b> <code>{round(end - start, 5)*1000}ms</code>\n"
+    reply_msg += (
+        f"<b>Ping:</b> <code>{round((end - start) * 1000, 5)}ms</code>\n"
+    )
     await client.send_message(
         message.chat.id,
         reply_msg,
