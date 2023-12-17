@@ -114,9 +114,9 @@ class Chat(Object):
             photo=types.ChatPhoto._parse(
                 client, user.photo, peer_id, user.access_hash
             ),
-            restrictions=types.List([
-                types.Restriction._parse(r) for r in user.restriction_reason
-            ])
+            restrictions=types.List(
+                [types.Restriction._parse(r) for r in user.restriction_reason]
+            )
             or None,
             dc_id=getattr(getattr(user, "photo", None), "dc_id", None),
             client=client,
@@ -169,9 +169,9 @@ class Chat(Object):
                 peer_id,
                 getattr(channel, "access_hash", 0),
             ),
-            restrictions=types.List([
-                types.Restriction._parse(r) for r in restriction_reason
-            ])
+            restrictions=types.List(
+                [types.Restriction._parse(r) for r in restriction_reason]
+            )
             or None,
             permissions=types.ChatPermissions._parse(
                 getattr(channel, "default_banned_rights", None)
