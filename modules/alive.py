@@ -47,6 +47,7 @@ def get_readable_time(seconds: int) -> str:
 
 @Client.on_message(filters.command("alive", prefix) & filters.me)
 async def alive(client: Client, message: Message):
+    reply = message.reply_to_message if message.reply_to_message else None
     uptime = get_readable_time((time.time() - StartTime))
     start = time.perf_counter()
     reply_msg = (
@@ -59,13 +60,14 @@ async def alive(client: Client, message: Message):
     await message.delete()
     end = time.perf_counter()
     reply_msg += (
-        f"<b>Ping:</b> <code>{round((end - start) * 1000, 5)}ms</code>\n"
+        f"<b>Ping:</b> <code>{round((end - start) * 1000, 2)}ms</code>\n"
     )
     await client.send_message(
         message.chat.id,
         reply_msg,
         disable_web_page_preview=True,
         message_thread_id=message.message_thread_id,
+        reply_to_message_id=reply,
     )
 
 
