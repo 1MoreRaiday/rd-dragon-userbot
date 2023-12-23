@@ -39,7 +39,7 @@ async def aexec(code, *args, timeout=None):
         + " r = reply; "
         + " p = print; "
         + " me = await c.get_me(); "
-        + " api_key = db.get('custom.gpt', 'api_key'); "
+        + " api_key = db.get('core.gpt', 'api_key'); "
         + " u = m.from_user\n"
         + "".join(f"\n {_l}" for _l in code.split("\n"))
     )
