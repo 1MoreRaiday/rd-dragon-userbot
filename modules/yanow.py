@@ -44,7 +44,7 @@ async def set_token(_: Client, message: Message):
 
 # noinspection PyBroadException
 @Client.on_message(
-    filters.command(["yanow", "ynow", "y", "н"], prefix) & filters.me
+    filters.command(["yanow", "ynow", "y", "я"], prefix) & filters.me
 )
 async def get_now_playing(client: Client, message: Message):
     if not db.get("core.yanow", "token"):
