@@ -47,7 +47,7 @@ def get_readable_time(seconds: int) -> str:
 
 @Client.on_message(filters.command("alive", prefix) & filters.me)
 async def alive(client: Client, message: Message):
-    reply = message.reply_to_message if message.reply_to_message else None
+    reply_id = message.reply_to_message.id if message.reply_to_message else None
     uptime = get_readable_time((time.time() - StartTime))
     start = time.perf_counter()
     reply_msg = (
@@ -67,7 +67,7 @@ async def alive(client: Client, message: Message):
         reply_msg,
         disable_web_page_preview=True,
         message_thread_id=message.message_thread_id,
-        reply_to_message_id=reply,
+        reply_to_message_id=reply_id,
     )
 
 
