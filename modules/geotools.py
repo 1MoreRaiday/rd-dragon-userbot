@@ -52,7 +52,7 @@ async def geo(client: Client, message: Message):
         message.chat.id,
         latitude=place[0],
         longitude=place[1],
-        reply_to_message_id=r.message_id if r else None,
+        reply_to_message_id=r.id if r else None,
     )
 
 
