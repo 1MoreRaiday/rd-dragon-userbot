@@ -28,12 +28,15 @@ from utils.scripts import with_reply
 async def del_msg(client: Client, message: Message):
     if not message.reply_to_message:
         with suppress(errors.MessageDeleteForbidden):
-            msg = await client.get_messages(message.chat.id, message.id - 1)
-            while msg.empty:
-                msg = await client.get_messages(message.chat.id, msg.id - 1)
-            await msg.delete()
+            ids = [message.id]
+            async for msg in client.get_chat_history(
+                message.chat.id, limit=1, offset_id=message.id
+            ):
+                ids.append(msg.id)
+            await client.delete_messages(message.chat.id, ids)
     else:
-        await message.reply_to_message.delete()
+        with suppress(errors.MessageDeleteForbidden):
+            await message.reply_to_message.delete()
     await message.delete()
 
 
