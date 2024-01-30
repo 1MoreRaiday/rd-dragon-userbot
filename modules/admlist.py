@@ -349,8 +349,7 @@ async def admlist(client: Client, message: types.Message):
             len(adminned_chats) + len(owned_chats) + len(owned_usernamed_chats)
         )
         await message.edit(
-            text
-            + f"\n<b><u>Total:</u></b> {total_count}\n<b><u>Adminned"
+            text + f"\n<b><u>Total:</u></b> {total_count}\n<b><u>Adminned"
             f" chats:</u></b> {len(adminned_chats)}\n<b><u>Owned"
             f" chats:</u></b> {len(owned_chats)}\n<b><u>Owned chats with"
             f" username:</u></b> {len(owned_usernamed_chats)}\n\nDone at"
