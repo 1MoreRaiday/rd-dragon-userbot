@@ -52,8 +52,7 @@ async def aexec(code, *args, timeout=None):
 
 
 code_result = (
-    "<b><emoji id=5431376038628171216>💻</emoji> Code:</b>\n<pre"
-    ' language="{pre_language}">{code}</pre>\n\n{result}'
+    "<b>Code:</b>\n<pre language='{pre_language}'>{code}</pre>\n\n{result}"
 )
 
 
@@ -84,13 +83,18 @@ async def python_exec(client: Client, message: Message):
 
     code = message.text.split(maxsplit=1)[1]
 
-    await message.edit(
-        "<b><emoji id=5821116867309210830>🔃</emoji> Executing...</b>"
-    )
+    await message.edit("<b>Executing...</b>")
 
     try:
         start_time = perf_counter()
-        result = await aexec(code, client, message, db, globals(), timeout=60)
+        result = await aexec(
+            code,
+            client,
+            message,
+            db,
+            globals(),
+            timeout=db.get("core.python", "timeout", None),
+        )
         stop_time = perf_counter()
 
         result = result.replace(
@@ -106,11 +110,7 @@ async def python_exec(client: Client, message: Message):
             code_result.format(
                 pre_language="python",
                 code=code,
-                result=(
-                    "<b><emoji id=5472164874886846699>✨</emoji> Result</b>:\n"
-                    f"{result}\n"
-                    f"<b>Completed in {round(stop_time - start_time, 5)}s.</b>"
-                ),
+                result=f"<b>Result</b>:\n{result}\n<b>Completed in {round(stop_time - start_time, 5)}s.</b>",
             ),
             disable_web_page_preview=True,
         )
@@ -119,10 +119,7 @@ async def python_exec(client: Client, message: Message):
             code_result.format(
                 pre_language="python",
                 code=code,
-                result=(
-                    "<b><emoji id=5465665476971471368>❌</emoji> Timeout"
-                    " Error!</b>"
-                ),
+                result="<b>Timeout Error!</b>",
             ),
             disable_web_page_preview=True,
         )
@@ -136,9 +133,7 @@ async def python_exec(client: Client, message: Message):
                 pre_language="python",
                 code=code,
                 result=(
-                    "<b><emoji id=5465665476971471368>❌</emoji>"
-                    f" {e.__class__.__name__}: {e}</b>\nTraceback:"
-                    f" {html.escape(await paste_yaso(err.getvalue()))}"
+                    f"<b> {e.__class__.__name__}: {e}</b>\nTraceback: {html.escape(await paste_yaso(err.getvalue()))}"
                 ),
             ),
             disable_web_page_preview=True,
