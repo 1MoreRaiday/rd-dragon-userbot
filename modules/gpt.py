@@ -81,10 +81,10 @@ async def gpt(client: Client, message: Message):
     if not isinstance(response, Message):
         messages.append({
             "role": "assistant",
-            "content": str(response["choices"][0]["message"].content),
+            "content": str(response.choices[0].message.content),
         })
         await message.edit(
-            f'{mistune.html(response["choices"][0]["message"].content)}\n\n<b>Your'
+            f'{mistune.html(response.choices[0].message.content)}\n\n<b>Your'
             f" question was:</b> <code>{question}</code>",
         )
 
