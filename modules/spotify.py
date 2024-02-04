@@ -210,7 +210,7 @@ async def now(client: Client, message: Message):
         try:
             for r in (
                 await client.get_inline_bot_results(
-                    "vkm4bot", f"{', '.join(artists_names)} - {track}"
+                    "anymelody_bot", f"{', '.join(artists_names)} - {track}"
                 )
             )["results"]:
                 if r["type"] == "audio":
@@ -253,52 +253,6 @@ async def now(client: Client, message: Message):
             for r in (
                 await client.get_inline_bot_results(
                     "anymelody_bot", f"{', '.join(artists_names)} - {track}"
-                )
-            )["results"]:
-                if r["type"] == "audio":
-                    await client.send_cached_media(
-                        message.chat.id,
-                        Document._parse(client, r["document"], "audio")[
-                            "file_id"
-                        ],
-                        res,
-                        reply_to_message_id=(
-                            message.reply_to_message.message_id
-                            if message.reply_to_message is not None
-                            else None
-                        ),
-                    )
-                    await message.delete()
-                    return
-        except:
-            pass
-        try:
-            for r in (
-                await client.get_inline_bot_results(
-                    "spotifysavebot", f"{', '.join(artists_names)} - {track}"
-                )
-            )["results"]:
-                if r["type"] == "audio":
-                    await client.send_cached_media(
-                        message.chat.id,
-                        Document._parse(client, r["document"], "audio")[
-                            "file_id"
-                        ],
-                        res,
-                        reply_to_message_id=(
-                            message.reply_to_message.message_id
-                            if message.reply_to_message is not None
-                            else None
-                        ),
-                    )
-                    await message.delete()
-                    return
-        except:
-            pass
-        try:
-            for r in (
-                await client.get_inline_bot_results(
-                    "lybot", f"{', '.join(artists_names)} - {track}"
                 )
             )["results"]:
                 if r["type"] == "audio":
