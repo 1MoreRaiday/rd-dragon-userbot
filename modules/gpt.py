@@ -84,7 +84,7 @@ async def gpt(client: Client, message: Message):
             "content": str(response.choices[0].message.content),
         })
         await message.edit(
-            f'{mistune.html(response.choices[0].message.content)}\n\n<b>Your'
+            f"{mistune.html(response.choices[0].message.content)}\n\n<b>Your"
             f" question was:</b> <code>{question}</code>",
         )
 
