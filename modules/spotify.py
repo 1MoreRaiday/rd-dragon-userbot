@@ -31,7 +31,7 @@ def auth_required(function):
     async def wrapped(client: Client, message: Message):
         if db.get("core.spotify", "token") is None:
             await message.edit(
-                f"<b>⚠️ Authorization is required to use this module.\n"
+                "<b>⚠️ Authorization is required to use this module.\n"
                 f"ℹ️Execute <code>{prefix}spauth</code> for authorization.</b>"
             )
         else:
@@ -117,8 +117,9 @@ async def codeauth(client: Client, message: Message):
             )
         except Exception as e:
             await message.edit(
-                "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
-                f"Error:</b> <code>{e.__class__.__name__}</code>"
+                "<b>⚠️ An error occurred. Please check that you are doing"
+                " everything correctly.\nError:</b>"
+                f" <code>{e.__class__.__name__}</code>"
             )
 
 
@@ -195,8 +196,7 @@ async def now(client: Client, message: Message):
         success = False
 
     if from_playlist and success:
-        res = textwrap.dedent(
-            f"""
+        res = textwrap.dedent(f"""
                 <b>🎶 Now playing: <i>{", ".join(artists)} - <a href='{track_url}'>{track}</a> <a href="https://song.link/s/{track_id}">(other platforms)</a></i>
                 📱 Device: <code>{device}</code>
                 🔊 Volume: {volume}
@@ -204,8 +204,7 @@ async def now(client: Client, message: Message):
                 🫂 Playlist Owner: {playlist_owner}
                 
                 <code>{bar}</code></b>
-            """
-        )
+            """)
         err = False
         try:
             for r in (
@@ -237,15 +236,13 @@ async def now(client: Client, message: Message):
             res += "\n<b>ℹ️Failed to find the song.</b>"
             await message.edit(res, disable_web_page_preview=True)
     elif success:
-        res = textwrap.dedent(
-            f"""
+        res = textwrap.dedent(f"""
                 <b>🎶 Now playing: <i>{", ".join(artists)} - <a href='{track_url}'>{track}</a> <a href="https://song.link/s/{track_id}">(other platforms)</a></i>
                 📱 Device: <code>{device}</code>
                 🔊 Volume: {volume}
                     
                 <code>{bar}</code></b>
-            """
-        )
+            """)
 
         try:
             for r in (
@@ -290,8 +287,9 @@ async def repeat(client: Client, message: Message):
         )
     except Exception as e:
         await message.edit(
-            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
-            f"Error:</b> <code>{e.__class__.__name__}</code>"
+            "<b>⚠️ An error occurred. Please check that you are doing"
+            " everything correctly.\nError:</b>"
+            f" <code>{e.__class__.__name__}</code>"
         )
 
 
@@ -306,8 +304,9 @@ async def derepeat(client: Client, message: Message):
         await message.edit("🎶 Successfully removed from repeat.")
     except Exception as e:
         await message.edit(
-            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
-            f"Error:</b> <code>{e.__class__.__name__}</code>"
+            "<b>⚠️ An error occurred. Please check that you are doing"
+            " everything correctly.\nError:</b>"
+            f" <code>{e.__class__.__name__}</code>"
         )
 
 
@@ -322,8 +321,9 @@ async def next(client: Client, message: Message):
         await message.edit("⏭️ Track switched successfully.")
     except Exception as e:
         await message.edit(
-            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
-            f"Error:</b> <code>{e.__class__.__name__}</code>"
+            "<b>⚠️ An error occurred. Please check that you are doing"
+            " everything correctly.\nError:</b>"
+            f" <code>{e.__class__.__name__}</code>"
         )
 
 
@@ -338,8 +338,9 @@ async def pausetr(client: Client, message: Message):
         await message.edit("⏸️ Paused successfully.")
     except Exception as e:
         await message.edit(
-            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
-            f"Error:</b> <code>{e.__class__.__name__}</code>"
+            "<b>⚠️ An error occurred. Please check that you are doing"
+            " everything correctly.\nError:</b>"
+            f" <code>{e.__class__.__name__}</code>"
         )
 
 
@@ -354,8 +355,9 @@ async def unpausetr(client: Client, message: Message):
         await message.edit("▶️ Successfully resumed playback")
     except Exception as e:
         await message.edit(
-            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
-            f"Error:</b> <code>{e.__class__.__name__}</code>"
+            "<b>⚠️ An error occurred. Please check that you are doing"
+            " everything correctly.\nError:</b>"
+            f" <code>{e.__class__.__name__}</code>"
         )
 
 
@@ -370,8 +372,9 @@ async def back(client: Client, message: Message):
         await message.edit("◀️ Track returned successfully.")
     except Exception as e:
         await message.edit(
-            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
-            f"Error:</b> <code>{e.__class__.__name__}</code>"
+            "<b>⚠️ An error occurred. Please check that you are doing"
+            " everything correctly.\nError:</b>"
+            f" <code>{e.__class__.__name__}</code>"
         )
 
 
@@ -386,8 +389,9 @@ async def restr(client: Client, message: Message):
         await message.edit("🔁 Track restarted.")
     except Exception as e:
         await message.edit(
-            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
-            f"Error:</b> <code>{e.__class__.__name__}</code>"
+            "<b>⚠️ An error occurred. Please check that you are doing"
+            " everything correctly.\nError:</b>"
+            f" <code>{e.__class__.__name__}</code>"
         )
 
 
@@ -403,8 +407,9 @@ async def liketr(client: Client, message: Message):
         await message.edit("💚 Liked!")
     except Exception as e:
         await message.edit(
-            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
-            f"Error:</b> <code>{e.__class__.__name__}</code>"
+            "<b>⚠️ An error occurred. Please check that you are doing"
+            " everything correctly.\nError:</b>"
+            f" <code>{e.__class__.__name__}</code>"
         )
 
 

@@ -20,12 +20,11 @@ from pyrogram.types import Message
 from utils.misc import modules_help, prefix
 
 # if your module has packages from PyPi
+# requires: example_1
+# requires: example_2
+# import example_1, example_2
 
-# from utils.scripts import import_library
-# example_1 = import_library("example_1")
-# example_2 = import_library("example_2")
-
-# import_library() will automatically install required library
+# this comments will automatically install required library
 # if it isn't installed
 
 

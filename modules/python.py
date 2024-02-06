@@ -110,7 +110,10 @@ async def python_exec(client: Client, message: Message):
             code_result.format(
                 pre_language="python",
                 code=code,
-                result=f"<b>Result</b>:\n{result}\n<b>Completed in {round(stop_time - start_time, 5)}s.</b>",
+                result=(
+                    f"<b>Result</b>:\n{result}\n<b>Completed in"
+                    f" {round(stop_time - start_time, 5)}s.</b>"
+                ),
             ),
             disable_web_page_preview=True,
         )
@@ -133,7 +136,8 @@ async def python_exec(client: Client, message: Message):
                 pre_language="python",
                 code=code,
                 result=(
-                    f"<b> {e.__class__.__name__}: {e}</b>\nTraceback: {html.escape(await paste_yaso(err.getvalue()))}"
+                    f"<b> {e.__class__.__name__}: {e}</b>\nTraceback:"
+                    f" {html.escape(await paste_yaso(err.getvalue()))}"
                 ),
             ),
             disable_web_page_preview=True,

@@ -163,9 +163,9 @@ def import_library(library_name: str, package_name: str = None):
     try:
         return importlib.import_module(library_name)
     except ImportError:
-        completed = subprocess.run(
-            [sys.executable, "-m", "pip", "install", package_name]
-        )
+        completed = subprocess.run([
+            sys.executable, "-m", "pip", "install", package_name
+        ])
         if completed.returncode != 0:
             raise AssertionError(
                 f"Failed to install library {package_name} (pip exited with"
@@ -253,7 +253,7 @@ async def load_module(
             if message:
                 await message.edit(
                     "<b>Failed to install requirements (pip exited with code"
-                    f" {proc.returncode}). Check logs for futher info</b>"
+                    f" {proc.returncode}). Check logs for further info</b>"
                 )
             raise RuntimeError("failed to install requirements") from e
 

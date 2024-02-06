@@ -8,6 +8,7 @@
 # https://creativecommons.org/licenses/by-nc-nd/4.0/
 # You CANNOT edit this file without direct permission from the author.
 # You can redistribute this file without any changes.
+# requires: aiohttp yandex_music
 
 import html
 import io
@@ -19,9 +20,6 @@ from yandex_music import ClientAsync
 from utils.db import db
 from utils.misc import modules_help, prefix
 from utils.scripts import import_library
-
-_ = import_library("yandex_music", "yandex-music")
-__ = import_library("aiohttp")
 
 playing = (
     "<b>🎧 Now playing: </b><code>{}</code><b> -"
