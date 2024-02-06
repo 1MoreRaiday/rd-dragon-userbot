@@ -31,7 +31,7 @@ def auth_required(function):
     async def wrapped(client: Client, message: Message):
         if db.get("core.spotify", "token") is None:
             await message.edit(
-                f"<b>⚠️Authorization is required to use this module.\n"
+                f"<b>⚠️ Authorization is required to use this module.\n"
                 f"ℹ️Execute <code>{prefix}spauth</code> for authorization.</b>"
             )
         else:
@@ -88,7 +88,7 @@ loop.create_task(check_token_loop())
 @Client.on_message(filters.command("spauth", prefix) & filters.me)
 async def auth(client: Client, message: Message):
     if not db.get("core.spotify", "token") is None:
-        await message.edit("⚠️You are already authorized")
+        await message.edit("⚠️ You are already authorized")
     else:
         sp_auth.get_authorize_url()
         await message.edit(
@@ -101,7 +101,7 @@ async def auth(client: Client, message: Message):
 @Client.on_message(filters.command("spcodeauth", prefix) & filters.me)
 async def codeauth(client: Client, message: Message):
     if db.get("core.spotify", "token") is not None:
-        await message.edit("⚠️You are already authorized")
+        await message.edit("⚠️ You are already authorized")
     else:
         try:
             url = message.text.split(" ")[1]
@@ -112,12 +112,12 @@ async def codeauth(client: Client, message: Message):
                 sp_auth.get_access_token(code, True, False),
             )
             await message.edit(
-                "<b>✅Authorization successful. Now you can use the module.\n"
+                "<b>✅ Authorization successful. Now you can use the module.\n"
                 f"Command list: <code>{prefix}help spotify</code></b>"
             )
         except Exception as e:
             await message.edit(
-                "<b>⚠️An error occurred. Please check that you are doing everything correctly.\n"
+                "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
                 f"Error:</b> <code>{e.__class__.__name__}</code>"
             )
 
@@ -127,10 +127,10 @@ async def codeauth(client: Client, message: Message):
 async def unauth(client: Client, message: Message):
     db.remove("core.spotify", "token")
     db.remove("core.spotify", "last_token_update")
-    await message.edit("<b>✅Authorization data deleted successfully.</b>")
+    await message.edit("<b>✅ Authorization data deleted successfully.</b>")
 
 
-@Client.on_message(filters.command(["spnow", "snow", "s"], prefix) & filters.me)
+@Client.on_message(filters.command(["s", "snow", "spnow"], prefix) & filters.me)
 @auth_required
 async def now(client: Client, message: Message):
     sp = spotipy.Spotify(auth=db.get("core.spotify", "token")["access_token"])
@@ -212,13 +212,11 @@ async def now(client: Client, message: Message):
                 await client.get_inline_bot_results(
                     "anymelody_bot", f"{', '.join(artists_names)} - {track}"
                 )
-            )["results"]:
-                if r["type"] == "audio":
+            ).results:
+                if r.type == "audio":
                     await client.send_cached_media(
                         message.chat.id,
-                        Document._parse(client, r["document"], "audio")[
-                            "file_id"
-                        ],
+                        Document._parse(client, r.document, "audio").file_id,
                         res,
                         reply_to_message_id=(
                             message.reply_to_message.message_id
@@ -254,13 +252,11 @@ async def now(client: Client, message: Message):
                 await client.get_inline_bot_results(
                     "anymelody_bot", f"{', '.join(artists_names)} - {track}"
                 )
-            )["results"]:
-                if r["type"] == "audio":
+            ).results:
+                if r.type == "audio":
                     await client.send_cached_media(
                         message.chat.id,
-                        Document._parse(client, r["document"], "audio")[
-                            "file_id"
-                        ],
+                        Document._parse(client, r.document, "audio").file_id,
                         res,
                         reply_to_message_id=(
                             message.reply_to_message.message_id
@@ -276,7 +272,7 @@ async def now(client: Client, message: Message):
         await message.edit(res, disable_web_page_preview=True)
     else:
         await message.edit(
-            "<b>⚠️Failed to retrieve track\n"
+            "<b>⚠️ Failed to retrieve track\n"
             "Make sure Spotify is enabled and playing a track</b>"
         )
 
@@ -290,11 +286,11 @@ async def repeat(client: Client, message: Message):
         )
         sp.repeat("track")
         await message.edit(
-            "🔂Repeat mode enabled successfully. Happy listening!"
+            "🔂 Repeat mode enabled successfully. Happy listening!"
         )
     except Exception as e:
         await message.edit(
-            "<b>⚠️An error occurred. Please check that you are doing everything correctly.\n"
+            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
             f"Error:</b> <code>{e.__class__.__name__}</code>"
         )
 
@@ -307,10 +303,10 @@ async def derepeat(client: Client, message: Message):
             auth=db.get("core.spotify", "token")["access_token"]
         )
         sp.repeat("context")
-        await message.edit("🎶Successfully removed from repeat.")
+        await message.edit("🎶 Successfully removed from repeat.")
     except Exception as e:
         await message.edit(
-            "<b>⚠️An error occurred. Please check that you are doing everything correctly.\n"
+            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
             f"Error:</b> <code>{e.__class__.__name__}</code>"
         )
 
@@ -323,10 +319,10 @@ async def next(client: Client, message: Message):
             auth=db.get("core.spotify", "token")["access_token"]
         )
         sp.next_track()
-        await message.edit("⏭️Track switched successfully.")
+        await message.edit("⏭️ Track switched successfully.")
     except Exception as e:
         await message.edit(
-            "<b>⚠️An error occurred. Please check that you are doing everything correctly.\n"
+            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
             f"Error:</b> <code>{e.__class__.__name__}</code>"
         )
 
@@ -339,10 +335,10 @@ async def pausetr(client: Client, message: Message):
             auth=db.get("core.spotify", "token")["access_token"]
         )
         sp.pause_playback()
-        await message.edit("⏸️Paused successfully.")
+        await message.edit("⏸️ Paused successfully.")
     except Exception as e:
         await message.edit(
-            "<b>⚠️An error occurred. Please check that you are doing everything correctly.\n"
+            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
             f"Error:</b> <code>{e.__class__.__name__}</code>"
         )
 
@@ -355,10 +351,10 @@ async def unpausetr(client: Client, message: Message):
             auth=db.get("core.spotify", "token")["access_token"]
         )
         sp.start_playback()
-        await message.edit("▶️Successfully resumed playback")
+        await message.edit("▶️ Successfully resumed playback")
     except Exception as e:
         await message.edit(
-            "<b>⚠️An error occurred. Please check that you are doing everything correctly.\n"
+            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
             f"Error:</b> <code>{e.__class__.__name__}</code>"
         )
 
@@ -371,10 +367,10 @@ async def back(client: Client, message: Message):
             auth=db.get("core.spotify", "token")["access_token"]
         )
         sp.previous_track()
-        await message.edit("◀️Track returned successfully.")
+        await message.edit("◀️ Track returned successfully.")
     except Exception as e:
         await message.edit(
-            "<b>⚠️An error occurred. Please check that you are doing everything correctly.\n"
+            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
             f"Error:</b> <code>{e.__class__.__name__}</code>"
         )
 
@@ -387,10 +383,10 @@ async def restr(client: Client, message: Message):
             auth=db.get("core.spotify", "token")["access_token"]
         )
         sp.seek_track(0)
-        await message.edit("🔁Track restarted.")
+        await message.edit("🔁 Track restarted.")
     except Exception as e:
         await message.edit(
-            "<b>⚠️An error occurred. Please check that you are doing everything correctly.\n"
+            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
             f"Error:</b> <code>{e.__class__.__name__}</code>"
         )
 
@@ -404,10 +400,10 @@ async def liketr(client: Client, message: Message):
         )
         cupl = sp.current_playback()
         sp.current_user_saved_tracks_add([cupl["item"]["id"]])
-        await message.edit("💚Liked!")
+        await message.edit("💚 Liked!")
     except Exception as e:
         await message.edit(
-            "<b>⚠️An error occurred. Please check that you are doing everything correctly.\n"
+            "<b>⚠️ An error occurred. Please check that you are doing everything correctly.\n"
             f"Error:</b> <code>{e.__class__.__name__}</code>"
         )
 
