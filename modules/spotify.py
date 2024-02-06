@@ -130,7 +130,7 @@ async def unauth(client: Client, message: Message):
     await message.edit("<b>✅ Authorization data deleted successfully.</b>")
 
 
-@Client.on_message(filters.command(["s", "snow", "spnow"], prefix) & filters.me)
+@Client.on_message(filters.command(["snow", "spnow"], prefix) & filters.me)
 @auth_required
 async def now(client: Client, message: Message):
     sp = spotipy.Spotify(auth=db.get("core.spotify", "token")["access_token"])
