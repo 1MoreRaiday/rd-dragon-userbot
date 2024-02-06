@@ -1,4 +1,3 @@
-
 .DS_Store
 .gitattributes
 .vscode
@@ -11,6 +10,7 @@ __pycache__/
 *-journal
 /venv/
 /downloads/
+.cache
 /modules/custom_modules
 .idea
 config.ini
