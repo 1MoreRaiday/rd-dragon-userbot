@@ -8,6 +8,8 @@
 # https://creativecommons.org/licenses/by-nc-nd/4.0/
 # You CANNOT edit this file without direct permission from the author.
 # You can redistribute this file without any changes.
+#
+# requires: openai mistune
 
 import mistune
 import openai
@@ -17,10 +19,6 @@ from pyrogram.types import Message
 from utils.db import db
 from utils.misc import modules_help, prefix
 from utils.scripts import get_args_raw, import_library
-
-_ = import_library("openai")
-__ = import_library("mistune")
-
 
 messages: list[openai.types.chat.ChatCompletionMessageParam] = db.get(
     "core.gpt", "messages", []

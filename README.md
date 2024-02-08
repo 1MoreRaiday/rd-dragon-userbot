@@ -40,12 +40,10 @@ from utils.misc import modules_help, prefix
 
 # if your module has packages from PyPi
 
-# from utils.scripts import import_library
-# example_1 = import_library("example_1")
-# example_2 = import_library("example_2")
+# requires: example_1 example_2
+# import example_1, example_2
 
-# import_library() will automatically install required library
-# if it isn't installed
+# loader will scan meta comments and install packages
 
 
 @Client.on_message(filters.command("example_edit", prefix) & filters.me)

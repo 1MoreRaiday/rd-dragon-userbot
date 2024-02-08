@@ -1,16 +1,17 @@
+# requires: spotipy
+
 import asyncio
 import datetime
 import textwrap
 from math import ceil
 
+import spotipy
 from pyrogram import Client, filters
 from pyrogram.types import Document, Message
 
 from utils.db import db
 from utils.misc import modules_help, prefix
 from utils.scripts import import_library
-
-spotipy = import_library("spotipy")
 
 client_id = "e0708753ab60499c89ce263de9b4f57a"
 client_secret = "80c927166c664ee98a43a2c0e2981b4a"

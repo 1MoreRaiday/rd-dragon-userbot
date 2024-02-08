@@ -8,6 +8,8 @@
 # https://creativecommons.org/licenses/by-nc-nd/4.0/
 # You CANNOT edit this file without direct permission from the author.
 # You can redistribute this file without any changes.
+#
+# requires: geopy
 
 from ast import literal_eval
 from functools import partial
@@ -18,8 +20,6 @@ from pyrogram.types import Message
 
 from utils.misc import modules_help, prefix
 from utils.scripts import import_library
-
-_ = import_library("geopy")
 
 
 @Client.on_message(filters.command("geo", prefix) & filters.me)

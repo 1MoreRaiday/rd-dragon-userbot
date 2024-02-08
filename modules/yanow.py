@@ -8,6 +8,7 @@
 # https://creativecommons.org/licenses/by-nc-nd/4.0/
 # You CANNOT edit this file without direct permission from the author.
 # You can redistribute this file without any changes.
+#
 # requires: aiohttp yandex_music
 
 import html

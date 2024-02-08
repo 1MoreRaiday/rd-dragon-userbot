@@ -20,8 +20,7 @@ from pyrogram.types import Message
 from utils.misc import modules_help, prefix
 
 # if your module has packages from PyPi
-# requires: example_1
-# requires: example_2
+# requires: example_1 example_2
 # import example_1, example_2
 
 # this comments will automatically install required library
