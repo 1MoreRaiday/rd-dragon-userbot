@@ -37,10 +37,12 @@ async def help_cmd(_, message: Message):
         ):
             text += "• {}: {}\n".format(
                 module_name.title(),
-                " ".join([
-                    f"<code>{prefix + cmd_name.split()[0]}</code>"
-                    for cmd_name in module_commands.keys()
-                ]),
+                " ".join(
+                    [
+                        f"<code>{prefix + cmd_name.split()[0]}</code>"
+                        for cmd_name in module_commands.keys()
+                    ]
+                ),
             )
             if len(text) >= 2048:
                 text += "</b>"

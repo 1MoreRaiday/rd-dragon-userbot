@@ -107,11 +107,13 @@ async def fake_quote_cmd(client: Client, message: types.Message):
     send_for_me = "!me" in message.command or "!ls" in message.command
     no_reply = "!noreply" in message.command or "!nr" in message.command
 
-    fake_quote_text = " ".join([
-        arg
-        for arg in message.command[1:]
-        if arg not in ["!png", "!file", "!me", "!ls", "!noreply", "!nr"]
-    ])  # remove some special arg words
+    fake_quote_text = " ".join(
+        [
+            arg
+            for arg in message.command[1:]
+            if arg not in ["!png", "!file", "!me", "!ls", "!noreply", "!nr"]
+        ]
+    )  # remove some special arg words
 
     if not fake_quote_text:
         return await message.edit("<b>Fake quote text is empty</b>")
@@ -193,11 +195,13 @@ async def render_message(app: Client, message: types.Message) -> dict:
     entities = []
     if message.entities:
         for entity in message.entities:
-            entities.append({
-                "offset": entity.offset,
-                "length": entity.length,
-                "type": str(entity.type).split(".")[-1].lower(),
-            })
+            entities.append(
+                {
+                    "offset": entity.offset,
+                    "length": entity.length,
+                    "type": str(entity.type).split(".")[-1].lower(),
+                }
+            )
 
     def move_forwards(msg: types.Message):
         if msg.forward_from:
