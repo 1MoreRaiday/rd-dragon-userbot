@@ -13,7 +13,7 @@ import groq
 import mistune
 from pyrogram import Client, filters
 from pyrogram.types import Message
-
+import httpx
 from utils.db import db
 from utils.misc import modules_help, prefix
 from utils.scripts import get_args_raw, import_library
@@ -45,7 +45,14 @@ async def create_completion(
 def get_client() -> groq.AsyncClient:
     if db.get("core.groq", "api_key") is None:
         raise ValueError("<b>API key not set.</b>")
-    gcl = groq.AsyncClient(api_key=db.get("core.groq", "api_key"))
+    proxy = db.get("core.groq", "proxy")
+    if not proxy:
+        gcl = groq.AsyncClient(api_key=db.get("core.groq", "api_key"))
+    else:
+        gcl = groq.AsyncClient(api_key=db.get("core.groq", "api_key"), 
+            http_client=httpx.AsyncClient(
+            proxies=proxy
+            ))
     return gcl
 
 
@@ -103,9 +110,19 @@ async def set_version(_: Client, message: Message):
     db.set("core.groq", "version", message.text.split()[1])
     await message.edit("<b>Version set.</b>")
 
+@Client.on_message(filters.command("set_groq_proxy", prefix) & filters.me)
+async def set_proxy(_: Client, message: Message):
+    if len(message.text.split()) == 1: 
+        db.set("core.groq", "proxy", '')
+        await message.edit("<b>Proxy unset.</b>")
+    else: 
+        db.set("core.groq", "proxy", message.text.split()[1])
+    await message.edit("<b>Proxy set.</b>")
+
 
 modules_help["groq"] = {
     "groq [question]*": "Ask a question to GroqCloud (w/o context only).",
     "set_groq_key [key]*": "Set the GroqCloud API key. Use only in saved messages!",
     "set_groq_version [version]*": "Set the version. Default: mixtral-8x7b-32768.",
+    "set_groq_proxy [proxy|none]*": "Set the proxy. Default: None.",
 }

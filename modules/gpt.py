@@ -11,6 +11,7 @@
 
 import mistune
 import openai
+import httpx
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
@@ -48,7 +49,14 @@ async def create_completion(
 def get_client() -> openai.AsyncClient:
     if db.get("core.gpt", "api_key") is None:
         raise ValueError("<b>API key not set.</b>")
-    oai = openai.AsyncClient(api_key=db.get("core.gpt", "api_key"))
+    proxy = db.get("core.gpt", "proxy")
+    if not proxy:
+        oai = openai.AsyncClient(api_key=db.get("core.gpt", "api_key"))
+    else:
+        oai = openai.AsyncClient(api_key=db.get("core.gpt", "api_key"), 
+            http_client=httpx.AsyncClient(
+            proxies=proxy
+            ))
     return oai
 
 
@@ -141,6 +149,14 @@ async def set_version(_: Client, message: Message):
     db.set("core.gpt", "version", message.text.split()[1])
     await message.edit("<b>Version set.</b>")
 
+@Client.on_message(filters.command("set_gpt_proxy", prefix) & filters.me)
+async def set_proxy(_: Client, message: Message):
+    if len(message.text.split()) == 1: 
+        db.set("core.gpt", "proxy", '')
+        await message.edit("<b>Proxy unset.</b>")
+    else: 
+        db.set("core.gpt", "proxy", message.text.split()[1])
+    await message.edit("<b>Proxy set.</b>")
 
 modules_help["gpt"] = {
     "gpt [question]*": "Ask a question to ChatGPT.",
@@ -148,4 +164,5 @@ modules_help["gpt"] = {
     "set_api_key [key]*": "Set the API key. Use only in saved messages!",
     "clearchat": "Clear the chat history.",
     "set_version [version]*": "Set the version. Default: gpt-3.5-turbo-16k.",
+    "set_gpt_proxy [proxy|none]*": "Set the proxy. Default: None.",
 }

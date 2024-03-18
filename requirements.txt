@@ -25,3 +25,4 @@ yandex_music
 mistune
 openai
 groq
+httpx[socks]

@@ -52,7 +52,7 @@ async def alive(client: Client, message: Message):
     start = time.perf_counter()
     reply_msg = (
         f"<a href ="
-        f" https://gitlab.com/visionavtr/dragon-userbot>Dragon-Userbot</a>\n"
+        f" https://github.com/1MoreRaiday/rd-dragon-userbot>Dragon-Userbot</a>\n"
     )
     reply_msg += f"<b>Python Version:</b> <code>{__python_version__}</code>\n"
     reply_msg += f"<b>Pyrogram Version:</b> <code>{__pyro_version__}</code>\n"
