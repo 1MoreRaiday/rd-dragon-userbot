@@ -39,7 +39,7 @@ app = Client(
     api_id=config.api_id,
     api_hash=config.api_hash,
     hide_password=True,
-    workdir=script_path,
+    workdir=script_path if config.persistence_path == './' else config.persistence_path,
     app_version=userbot_version,
     device_model=f"Dragon-Userbot @ {gitrepo.head.commit.hexsha[:7]}",
     system_version=platform.version() + " " + platform.machine(),
@@ -67,7 +67,7 @@ async def main():
             logging.warning(
                 "Session file is locked. Trying to kill blocking process..."
             )
-            subprocess.run(["fuser", "-k", "my_account.session"])
+            subprocess.run(["fuser", "-k", config.persistence_path + "my_account.session"])
             restart()
         raise
     except (errors.NotAcceptable, errors.Unauthorized) as e:
@@ -75,7 +75,7 @@ async def main():
             f"{e.__class__.__name__}: {e}\n"
             "Moving session file to my_account.session-old..."
         )
-        os.rename("./my_account.session", "./my_account.session-old")
+        os.rename(config.persistence_path + "my_account.session", config.persistence_path + "my_account.session-old")
         restart()
 
     success_modules = 0

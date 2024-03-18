@@ -43,6 +43,7 @@ async def set_token(_: Client, message: Message):
 
 
 # noinspection PyBroadException
+from pyrogram.types import Document
 @Client.on_message(
     filters.command(["yanow", "ynow", "y", "я"], prefix) & filters.me
 )
@@ -54,20 +55,25 @@ async def get_now_playing(client: Client, message: Message):
 
     ya_client = ClientAsync(db.get("core.yanow", "token"))
     await ya_client.init()
-    try:
-        queues = await ya_client.queues_list()
-        last_queue = await ya_client.queue(queues[0].id)
-    except:
-        return await message.edit(
-            '<b>You are listening track from "My Vibe"</b>.'
-        )
-    try:
-        last_track_id = last_queue.get_current_track()
-        last_track = await last_track_id.fetch_track_async()
-    except:
-        return await message.edit(
-            '<b>You are listening track from "My Vibe"</b>.'
-        )
+    try: url = message.text.split(' ')[1]
+    except: url = None
+    if url:
+        last_track = (await ya_client.tracks([url.split('/')[-1].split('?')[0]]))[0]
+    else:
+        try:
+            queues = await ya_client.queues_list()
+            last_queue = await ya_client.queue(queues[0].id)
+        except:
+            return await message.edit(
+                '<b>You are listening track from "My Vibe"</b>.'
+            )
+        try:
+            last_track_id = last_queue.get_current_track()
+            last_track = await last_track_id.fetch_track_async()
+        except:
+            return await message.edit(
+                '<b>You are listening track from "My Vibe"</b>.'
+            )
 
     artists = ", ".join(last_track.artists_name())
     title = last_track.title
@@ -92,6 +98,14 @@ async def get_now_playing(client: Client, message: Message):
     await message.edit(
         f"<b>Fetching... </b>\n\n{caption}", disable_web_page_preview=True
     )
+    # audio_search = await client.get_inline_bot_results("anymelody_bot", f"{artists} - {title}")
+    # audio = Document._parse(client, audio_search.results[0].document, "audio")
+    # await client.send_document(
+    #     chat_id=message.chat.id,
+    #     document=audio.file_id,
+    #     caption=caption,
+    #     reply_to_message_id=message.reply_to_message_id,
+    # )
 
     await client.send_audio(
         chat_id=message.chat.id,
@@ -106,6 +120,7 @@ async def get_now_playing(client: Client, message: Message):
         reply_to_message_id=message.reply_to_message_id,
         message_thread_id=message.message_thread_id,
     )
+
     await message.delete()
 
 

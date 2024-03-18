@@ -171,4 +171,4 @@ class SqliteDatabase(Database):
 if config.db_type in ["mongo", "mongodb"]:
     db = MongoDatabase(config.db_url, config.db_name)
 else:
-    db = SqliteDatabase(config.db_name)
+    db = SqliteDatabase(config.persistence_path + config.db_name)
